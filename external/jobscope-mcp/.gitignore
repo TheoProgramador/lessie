@@ -1,0 +1,15 @@
+node_modules
+.wrangler
+.dev.vars
+dist
+*.log
+.DS_Store
+
+# Local-only working notes: design specs and implementation plans live
+# here while in progress. They are intentionally not tracked in this repo
+# so the public history stays focused on shipped code.
+docs/
+
+# Local-only one-time verification script for Workday tenant unlock.
+# Documented in Plan B spec; not committed to public repo.
+scripts/reverify-workday.ts

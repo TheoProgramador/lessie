@@ -1,0 +1,52 @@
+<div class="row">
+  <div class="col-xl-6 col-md-8">
+    <app-card cardTitle="Usuario autenticado">
+      @if (loading) {
+        <div class="text-muted">Carregando...</div>
+      } @else if (profile) {
+        <div class="d-flex align-items-center gap-3">
+          @if (profile.pictureUrl) {
+            <img class="profile-photo" [src]="profile.pictureUrl" alt="Foto do usuario" referrerpolicy="no-referrer" />
+          } @else {
+            <div class="profile-photo profile-photo-placeholder">
+              <i class="feather icon-user"></i>
+            </div>
+          }
+          <div>
+            <h4 class="mb-1">{{ profile.name }}</h4>
+            <p class="mb-0 text-muted">{{ profile.email }}</p>
+          </div>
+        </div>
+        <button type="button" class="btn btn-outline-secondary mt-4" (click)="logout()">Sair</button>
+      } @else {
+        <div class="text-danger">{{ error }}</div>
+      }
+    </app-card>
+  </div>
+
+  <div class="col-xl-6 col-md-8">
+    <app-card cardTitle="Creditos Lessie">
+      @if (loading) {
+        <div class="text-muted">Carregando...</div>
+      } @else if (profile) {
+        <div class="credit-summary">
+          <div>
+            <span>Curriculos</span>
+            <strong>{{ remainingResumeAnalyses }}</strong>
+          </div>
+          <div>
+            <span>Chats</span>
+            <strong>{{ remainingChatConversations }}</strong>
+          </div>
+          <div>
+            <span>Entrevistas</span>
+            <strong>{{ remainingInterviewAnalyses }}</strong>
+          </div>
+        </div>
+        <a routerLink="/credits" class="btn btn-primary mt-4">Comprar creditos</a>
+      } @else {
+        <div class="text-muted">Entre novamente para ver seus creditos.</div>
+      }
+    </app-card>
+  </div>
+</div>

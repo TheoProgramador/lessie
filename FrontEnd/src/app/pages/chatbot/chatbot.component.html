@@ -1,0 +1,176 @@
+<div class="row">
+  <div class="col-12">
+    <div class="page-heading">
+      <h3>AI Orchestrator Chatbot</h3>
+      <p class="text-muted mb-0">Primeira versao da IA que futuramente ira orquestrar MCPs e ferramentas.</p>
+    </div>
+  </div>
+
+  <div class="col-xl-4 col-lg-5">
+    <app-card cardTitle="Configuracao Groq">
+      @if (hasApiKey) {
+        <div class="alert alert-success py-2">Groq API Key configurada.</div>
+      }
+      <label class="form-label" for="groq-api-key">API Key da Groq</label>
+      <input
+        id="groq-api-key"
+        type="password"
+        class="form-control"
+        autocomplete="off"
+        [(ngModel)]="apiKeyInput"
+        placeholder="gsk_..."
+      />
+      <div class="d-flex gap-2 mt-3">
+        <button type="button" class="btn btn-primary" (click)="saveApiKey()" [disabled]="settingsLoading">Salvar API Key</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="clearApiKey()" [disabled]="settingsLoading">Limpar API Key</button>
+      </div>
+    </app-card>
+
+    <app-card cardTitle="Configuracao Pollinations" class="provider-card">
+      @if (hasPollinationsToken) {
+        <div class="alert alert-success py-2">Token Pollinations configurado.</div>
+      }
+      <label class="form-label" for="pollinations-token">Token da Pollinations</label>
+      <input
+        id="pollinations-token"
+        type="password"
+        class="form-control"
+        autocomplete="off"
+        [(ngModel)]="pollinationsTokenInput"
+        placeholder="pollinations_..."
+      />
+      <div class="d-flex gap-2 mt-3">
+        <button type="button" class="btn btn-primary" (click)="savePollinationsToken()" [disabled]="settingsLoading">
+          Salvar Token
+        </button>
+        <button type="button" class="btn btn-outline-secondary" (click)="clearPollinationsToken()" [disabled]="settingsLoading">
+          Limpar Token
+        </button>
+      </div>
+      @if (pollinationsError && activeChat !== 'pollinations') {
+        <div class="alert alert-danger py-2 mt-3">{{ pollinationsError }}</div>
+      }
+      @if (pollinationsSuccess && activeChat !== 'pollinations') {
+        <div class="alert alert-success py-2 mt-3">{{ pollinationsSuccess }}</div>
+      }
+    </app-card>
+  </div>
+
+  <div class="col-xl-8 col-lg-7">
+    <app-card cardTitle="Chat">
+      <div class="chat-tabs" role="tablist" aria-label="Chat provider">
+        <button
+          type="button"
+          class="chat-tab"
+          [class.chat-tab-active]="activeChat === 'groq'"
+          (click)="selectChat('groq')"
+        >
+          Groq
+        </button>
+        <button
+          type="button"
+          class="chat-tab"
+          [class.chat-tab-active]="activeChat === 'pollinations'"
+          (click)="selectChat('pollinations')"
+        >
+          Pollinations
+        </button>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center bg-light border rounded text-muted mb-3 px-3 py-2">
+        <span>Chat Pollinations</span>
+        <strong class="text-dark">{{ chatConversationCount }}/{{ chatConversationLimit }}</strong>
+      </div>
+
+      @if (activeChat === 'groq') {
+        <div #messageList class="chatbot-messages">
+          @if (messages.length === 0) {
+            <div class="empty-state text-muted">Envie uma mensagem para iniciar a conversa.</div>
+          }
+          @for (message of messages; track trackMessage($index)) {
+            <div class="message-row" [class.message-row-user]="message.role === 'user'">
+              <div class="message-bubble" [class.message-bubble-user]="message.role === 'user'">
+                {{ message.content }}
+                @if (message.toolResult) {
+                  <pre class="tool-result">{{ message.toolResult | json }}</pre>
+                }
+              </div>
+            </div>
+          }
+          @if (loading) {
+            <div class="message-row">
+              <div class="message-bubble message-loading">Respondendo...</div>
+            </div>
+          }
+        </div>
+
+        @if (error) {
+          <div class="alert alert-danger py-2 mt-3">{{ error }}</div>
+        }
+        @if (success) {
+          <div class="alert alert-success py-2 mt-3">{{ success }}</div>
+        }
+
+        <div class="chatbot-composer mt-3">
+          <textarea
+            class="form-control"
+            rows="3"
+            [(ngModel)]="messageInput"
+            (keydown)="onComposerKeydown($event)"
+            [disabled]="loading"
+            placeholder="Digite sua mensagem para Groq"
+          ></textarea>
+          <button type="button" class="btn btn-primary" (click)="sendMessage()" [disabled]="loading || !messageInput.trim()">
+            Enviar
+          </button>
+        </div>
+      }
+
+      @if (activeChat === 'pollinations') {
+        <div #pollinationsMessageList class="chatbot-messages">
+          @if (pollinationsMessages.length === 0) {
+            <div class="empty-state text-muted">Envie uma mensagem para testar a Pollinations.</div>
+          }
+          @for (message of pollinationsMessages; track trackMessage($index)) {
+            <div class="message-row" [class.message-row-user]="message.role === 'user'">
+              <div class="message-bubble" [class.message-bubble-user]="message.role === 'user'">
+                {{ message.content }}
+              </div>
+            </div>
+          }
+          @if (pollinationsLoading) {
+            <div class="message-row">
+              <div class="message-bubble message-loading">Respondendo...</div>
+            </div>
+          }
+        </div>
+
+        @if (pollinationsError) {
+          <div class="alert alert-danger py-2 mt-3">{{ pollinationsError }}</div>
+        }
+        @if (pollinationsSuccess) {
+          <div class="alert alert-success py-2 mt-3">{{ pollinationsSuccess }}</div>
+        }
+
+        <div class="chatbot-composer mt-3">
+          <textarea
+            class="form-control"
+            rows="3"
+            [(ngModel)]="pollinationsMessageInput"
+            (keydown)="onPollinationsComposerKeydown($event)"
+            [disabled]="pollinationsLoading"
+            placeholder="Digite sua mensagem para Pollinations"
+          ></textarea>
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="sendPollinationsMessage()"
+            [disabled]="pollinationsLoading || !pollinationsMessageInput.trim()"
+          >
+            Enviar
+          </button>
+        </div>
+      }
+    </app-card>
+  </div>
+</div>

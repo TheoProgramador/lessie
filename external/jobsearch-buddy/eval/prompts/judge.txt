@@ -1,0 +1,136 @@
+You are evaluating how well a job description was stripped for vector search.
+
+WHAT YOU'RE LOOKING AT: One original job description and its stripped version.
+You will judge many such pairs across diverse companies, industries, and roles —
+defense contractors, AI startups, fintech, enterprise SaaS, government, and more.
+Apply the same rubric consistently regardless of industry or role type.
+
+WHY WE STRIP: The stripped text becomes a single vector in a search index
+containing thousands of job postings from 100+ different companies. Users
+search across ALL companies with natural language queries like "robotics
+engineer with security clearance near DC", "PM roles at companies working
+on internet privacy", or "senior backend engineer at AI startup." Every
+word in the stripped text influences the vector.
+
+Text that appears identically across thousands of postings — EEO statements,
+generic benefits, legal disclaimers — pushes every job's vector toward the same
+point, drowning out the signal that makes each job unique. That shared text
+must be removed. But content specific to THIS company or THIS role is the
+signal that helps the right job surface for the right query — it must stay.
+
+THE OPERATION IS DELETION ONLY: The strip model removes content from the
+original. It should never rewrite, paraphrase, summarize, or add text.
+
+WHAT SHOULD BE REMOVED (interchangeable across companies' postings):
+- EEO / equal opportunity statements
+- Generic benefits lists (the standard health/dental/vision/401k/PTO package)
+- Drug-free workplace policies
+- Accessibility / accommodation request instructions
+- Legal disclaimers, privacy policy links, applicant data notices
+- Recruiter scam warnings
+- "We encourage all candidates to apply" diversity encouragement paragraphs
+
+WHAT SHOULD BE KEPT (differentiates this posting in cross-company search):
+- Role responsibilities, qualifications, tech stack, team/project descriptions
+- Company description, mission, products, named projects — anything specific
+  to THIS company that wouldn't appear on other companies' postings. Example:
+  Cloudflare's "Project Galileo" or Anthropic's research directions are
+  company-differentiating content, not boilerplate
+- Compensation details: salary ranges, equity, RSUs, signing bonuses
+- Remote / hybrid / onsite details, location, reporting structure
+- Eligibility requirements: export control, citizenship, security clearance,
+  background checks, work authorization — these are hard gates that determine
+  who can apply, not legal boilerplate. A user searching "jobs requiring
+  clearance" or "roles open to non-US-citizens" needs this in the vector
+- Benefits that are specific or unusual (100% coverage, fertility benefits,
+  specific dollar amounts) — only the generic "standard package" list should go
+
+THE KEY TEST: Would you find nearly identical text on thousands of other
+companies' postings? If yes, remove it. If it's specific to this company
+or role, keep it.
+
+Score the stripped version on four dimensions (1-5 each):
+
+RECALL — Did all differentiating content survive?
+  This is the most important dimension. Information loss means the job won't
+  surface for queries it should match.
+
+  5: Zero differentiating content removed. Every responsibility, qualification,
+     company detail, salary figure, eligibility requirement, and location detail
+     from the original is present in the stripped version.
+  4: One minor item lost — e.g., a single preferred qualification, a hashtag
+     like #LI-Remote, or a "nice to have" bullet. Nothing that would change
+     which queries match this job.
+  3: Two to three meaningful details lost — e.g., a work schedule, a few
+     qualifications, a nice-to-have section, or a company project description.
+     The job would still surface for most relevant queries but misses some.
+  2: An important category of content removed — e.g., the salary range, an
+     eligibility/clearance requirement, multiple required qualifications, or
+     a company-specific section (products, projects, mission). The job will
+     fail to surface for a class of queries it should match.
+  1: Core content gutted — the responsibilities section, the qualifications
+     section, or multiple important categories are missing. The stripped
+     version is missing what fundamentally defines this job.
+
+PRECISION — Was boilerplate actually removed?
+  Less critical than recall — noise hurts ranking but doesn't cause total misses.
+
+  5: No boilerplate remains. Every sentence in the stripped version is
+     differentiating content.
+  4: One or two boilerplate sentences remain — e.g., a stray EEO line,
+     an orphaned "we are an equal opportunity employer", a privacy link.
+  3: A full boilerplate paragraph or section remains — e.g., the entire
+     EEO block, the full generic benefits list, or a complete accommodation
+     statement. But most boilerplate was removed.
+  2: Multiple boilerplate sections remain — e.g., EEO + generic benefits,
+     or EEO + accommodation + diversity encouragement. More noise than signal
+     was left behind.
+  1: Little to no boilerplate removed. The stripped version is essentially
+     identical to the original — the model failed to perform the task.
+
+INTEGRITY — Was any false signal introduced?
+  Fabricated content poisons the search index — the job surfaces for wrong queries.
+
+  5: Every sentence in the stripped version exists in the original. No
+     additions, no rewording, no invented content of any kind.
+  4: No new factual claims. At most a trivial artifact from deletion — e.g.,
+     an orphaned section header with no content below it, or a dangling
+     bullet point.
+  3: Some phrases were reworded in ways that preserve the facts but change
+     the surface form — e.g., "5+ years" became "five or more years", or
+     a sentence was lightly restructured. No invented facts.
+  2: New factual claims are present that weren't in the original — e.g., a
+     salary range that differs from the original, a qualification that was
+     strengthened ("experience with" became "expertise in"), or a location/
+     requirement that was added. OR pervasive rewording that shifts what
+     queries would match.
+  1: Clearly fabricated content — invented salary figures, made-up
+     requirements, fictional company details, or a substantially
+     hallucinated section.
+
+FIDELITY — How closely does kept text match the original surface form?
+  Least important for search quality, but measures instruction-following.
+  This dimension is about surface form only — if the meaning is preserved
+  but words changed, that's a fidelity issue (not integrity).
+
+  5: Character-for-character identical on all kept content. If you diff the
+     stripped version against the original, the only changes are deletions.
+  4: Content matches but minor formatting differences — e.g., changed
+     whitespace, removed a header, converted bullets to plain text,
+     or trivial punctuation changes.
+  3: A few phrases reworded while fully preserving meaning — e.g.,
+     "Bachelor's degree required" became "Requires a Bachelor's degree".
+     Infrequent and minor.
+  2: Multiple sentences reworded, restructured, or condensed. The meaning
+     is mostly preserved but the text clearly went through a rewrite.
+  1: Substantially rewritten. Reads like a summary or paraphrase rather
+     than a subset of the original text.
+
+Respond with ONLY valid JSON (no markdown fences):
+{
+  "recall": <1-5>,
+  "precision": <1-5>,
+  "integrity": <1-5>,
+  "fidelity": <1-5>,
+  "reasoning": "<1-2 sentences explaining your scores>"
+}

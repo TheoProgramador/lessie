@@ -1,0 +1,142 @@
+.page-heading {
+  margin-bottom: 18px;
+}
+
+.selected-file {
+  background: #f6f8fb;
+  border: 1px solid #e3e8ef;
+  border-radius: 6px;
+  color: #334155;
+  font-size: 13px;
+  margin-top: 10px;
+  overflow-wrap: anywhere;
+  padding: 8px 10px;
+}
+
+.context-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.processing-state {
+  align-items: center;
+  display: flex;
+  gap: 14px;
+  min-height: 160px;
+}
+
+.warning-box {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 6px;
+  color: #9a3412;
+  line-height: 1.5;
+  padding: 12px;
+}
+
+.metrics-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 16px;
+}
+
+.metrics-grid > div {
+  background: #f6f8fb;
+  border: 1px solid #e3e8ef;
+  border-radius: 6px;
+  min-width: 0;
+  padding: 10px 12px;
+}
+
+.metrics-grid span {
+  color: #64748b;
+  display: block;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.metrics-grid strong {
+  color: #111827;
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 14px;
+}
+
+.analysis-output,
+.transcript-output {
+  margin-top: 22px;
+}
+
+.analysis-output h5,
+.transcript-output h5 {
+  color: #111827;
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.analysis-text {
+  background: #fff;
+  border: 1px solid #e3e8ef;
+  border-radius: 6px;
+  color: #1f2937;
+  line-height: 1.55;
+  max-height: 620px;
+  overflow: auto;
+  padding: 14px;
+  white-space: pre-wrap;
+}
+
+.transcript-list {
+  border: 1px solid #e3e8ef;
+  border-radius: 6px;
+  max-height: 520px;
+  overflow: auto;
+}
+
+.transcript-segment {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 128px minmax(0, 1fr);
+  padding: 10px 12px;
+}
+
+.transcript-segment + .transcript-segment {
+  border-top: 1px solid #eef2f6;
+}
+
+.transcript-segment span {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.transcript-segment p {
+  color: #1f2937;
+  margin: 0;
+}
+
+.empty-state {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-height: 220px;
+  text-align: center;
+}
+
+@media (max-width: 767px) {
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .transcript-segment {
+    grid-template-columns: 1fr;
+  }
+}

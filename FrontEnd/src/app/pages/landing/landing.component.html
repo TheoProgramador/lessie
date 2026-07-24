@@ -1,0 +1,176 @@
+<main class="landing-page">
+  <section class="hero-section">
+    <div class="hero-media" aria-hidden="true">
+      <img src="assets/images/sidebar.png" alt="" />
+      <div class="product-preview">
+        <div class="preview-sidebar">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <div class="preview-main">
+          <div class="preview-bar"></div>
+          <div class="score-row">
+            <strong>86</strong>
+            <div>
+              <span>Curriculo otimizado</span>
+              <small>Mais claro para recrutadores</small>
+            </div>
+          </div>
+          <div class="preview-list">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="topbar" aria-label="Navegacao inicial">
+      <a class="brand" routerLink="/">
+        <span>Lessie</span>
+      </a>
+      <div class="topbar-actions">
+        <a href="#funcionalidades">Funcionalidades</a>
+        <a href="#creditos">Creditos</a>
+        <a href="#como-funciona">Como funciona</a>
+        <a class="login-link" routerLink="/login">Entrar</a>
+      </div>
+    </nav>
+
+    <div class="hero-content">
+      <p class="eyebrow">Carreira, curriculo e busca de vagas com IA</p>
+      <h1>Lessie ajuda voce a transformar procura de emprego em um plano claro.</h1>
+      <p class="hero-copy">
+        Para quem nao quer decifrar sozinho vaga, curriculo, entrevista e contato com recrutadores. A Lessie le seus materiais,
+        organiza oportunidades e mostra melhorias praticas para aumentar suas chances.
+      </p>
+      <div class="hero-actions">
+        <a class="primary-action" routerLink="/login">Comecar com Google</a>
+        <a class="secondary-action" routerLink="/comprar-creditos">Comprar creditos</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="beneficios" class="benefit-section">
+    <div class="section-heading">
+      <span>Por que usar</span>
+      <h2>Menos tentativa no escuro. Mais direcao.</h2>
+      <p>
+        A Lessie nao promete emprego garantido. Ela ajuda voce a entender onde melhorar e como agir com mais estrategia.
+      </p>
+    </div>
+
+    <div class="benefit-grid">
+      <article>
+        <strong>Clareza</strong>
+        <p>Entenda se seu curriculo conversa com a vaga e quais pontos precisam aparecer melhor.</p>
+      </article>
+      <article>
+        <strong>Foco</strong>
+        <p>Compare vagas, termos importantes e oportunidades sem abrir dezenas de abas sem criterio.</p>
+      </article>
+      <article>
+        <strong>Preparacao</strong>
+        <p>Use transcricoes e analises de entrevista para treinar respostas mais objetivas.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="improvements-section">
+    <div class="section-heading">
+      <span>O que ficou mais forte</span>
+      <h2>Mais fontes uteis, menos ruido na sua busca.</h2>
+      <p>
+        A Lessie combina provedores de vagas e analise de curriculo sem tirar o controle das suas maos.
+      </p>
+    </div>
+
+    <div class="improvement-grid">
+      @for (improvement of improvements; track improvement.title) {
+        <article>
+          <h3>{{ improvement.title }}</h3>
+          <p>{{ improvement.text }}</p>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section id="funcionalidades" class="features-section">
+    <div class="section-heading">
+      <span>Funcionalidades</span>
+      <h2>Um painel para cuidar da sua jornada profissional.</h2>
+    </div>
+
+    <div class="feature-grid">
+      @for (feature of features; track feature.title) {
+        <article class="feature-card">
+          <i [class]="feature.icon" aria-hidden="true"></i>
+          <h3>{{ feature.title }}</h3>
+          <p>{{ feature.text }}</p>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section id="creditos" class="pricing-section">
+    <div class="section-heading">
+      <span>Creditos</span>
+      <h2>Pacotes simples para experimentar a Lessie no seu ritmo.</h2>
+      <p>
+        Comece pequeno, teste as ferramentas principais e aumente o saldo quando estiver aplicando para mais vagas.
+      </p>
+    </div>
+
+    @if (loadingCreditPlans) {
+      <div class="pricing-loading">Carregando pacotes...</div>
+    } @else {
+      <div class="pricing-preview">
+      @for (plan of creditPlans; track plan.code) {
+        <article>
+          @if (plan.badge) {
+            <span class="pricing-badge">{{ plan.badge }}</span>
+          }
+          <h3>{{ plan.name }}</h3>
+          <strong>{{ formatPrice(plan) }}</strong>
+          <p>{{ plan.credits }} creditos para curriculo, vagas e entrevistas.</p>
+          <a routerLink="/comprar-creditos">Comprar</a>
+        </article>
+      }
+      </div>
+    }
+  </section>
+
+  <section id="como-funciona" class="workflow-section">
+    <div class="section-heading">
+      <span>Como funciona</span>
+      <h2>Da duvida para a acao em poucos passos.</h2>
+    </div>
+
+    <div class="step-list">
+      @for (step of steps; track step.label) {
+        <article>
+          <span>{{ step.label }}</span>
+          <div>
+            <h3>{{ step.title }}</h3>
+            <p>{{ step.text }}</p>
+          </div>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="trust-section">
+    <div>
+      <h2>Voce continua no controle.</h2>
+      <p>
+        A Lessie mostra limites de uso, guarda historicos importantes e deixa claro quando uma analise e apenas uma estimativa.
+        As recomendacoes servem para melhorar sua preparacao, nao para substituir sua decisao.
+      </p>
+    </div>
+    <div class="trust-actions">
+      <a class="primary-action" routerLink="/login">Acessar Lessie</a>
+      <a class="dark-action" routerLink="/comprar-creditos">Ver creditos</a>
+    </div>
+  </section>
+</main>

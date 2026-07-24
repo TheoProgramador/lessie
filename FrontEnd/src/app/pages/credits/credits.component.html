@@ -1,0 +1,84 @@
+<main class="credits-page" [class.public-page]="isPublicPage">
+  @if (isPublicPage) {
+    <nav class="credits-topbar" aria-label="Navegacao de creditos">
+      <a class="brand" routerLink="/">Lessie</a>
+      <div>
+        <a routerLink="/">Inicio</a>
+        <a routerLink="/login">Entrar</a>
+      </div>
+    </nav>
+  }
+
+  <section class="credits-hero">
+    <div>
+      <p class="eyebrow">Creditos Lessie</p>
+      <h1>Compre creditos para analisar, buscar e preparar sua proxima oportunidade.</h1>
+      <p class="hero-copy">
+        Escolha um pacote para usar nas ferramentas da Lessie. O desenho ja esta pronto para receber o checkout do Mercado Pago.
+      </p>
+    </div>
+
+    <aside class="balance-panel">
+      <span>Saldo atual</span>
+      @if (loadingProfile) {
+        <strong>Carregando...</strong>
+      } @else {
+        <strong>{{ remainingCreditsText }}</strong>
+      }
+      @if (profile?.paidUntil) {
+        <small>Plano ativo ate {{ profile?.paidUntil | date: 'dd/MM/yyyy' }}</small>
+      } @else {
+        <small>Pacotes liberam novas execucoes conforme o saldo comprado.</small>
+      }
+    </aside>
+  </section>
+
+  <section class="promo-strip" aria-label="Codigo promocional">
+    <label for="promotionCode">Codigo promocional</label>
+    <input id="promotionCode" name="promotionCode" type="text" [(ngModel)]="promotionCode" placeholder="Opcional" />
+  </section>
+
+  @if (loadingPlans) {
+    <section class="loading-plans">Carregando pacotes...</section>
+  } @else {
+    <section class="plans-grid" aria-label="Pacotes de creditos">
+    @for (plan of plans; track plan.code) {
+      <article class="plan-card" [class.featured]="plan.badge" [class.selected]="selectedPlanId === plan.code">
+        @if (plan.badge) {
+          <span class="plan-badge">{{ plan.badge }}</span>
+        }
+        <div class="plan-heading">
+          <h2>{{ plan.name }}</h2>
+          <strong>{{ formatPrice(plan) }}</strong>
+        </div>
+        <p>{{ plan.description }}</p>
+        <div class="credit-count">
+          <i class="feather icon-zap" aria-hidden="true"></i>
+          <span>{{ plan.credits }} creditos</span>
+        </div>
+        <ul>
+          @for (highlight of highlightsFor(plan); track highlight) {
+            <li>
+              <i class="feather icon-check" aria-hidden="true"></i>
+              {{ highlight }}
+            </li>
+          }
+        </ul>
+        <button type="button" class="buy-button" [disabled]="processingPlanId === plan.code" (click)="selectPlan(plan)">
+          {{ processingPlanId === plan.code ? 'Gerando link...' : 'Comprar pacote' }}
+        </button>
+      </article>
+    }
+    </section>
+  }
+
+  @if (checkoutMessage) {
+    <section class="checkout-note" role="status">
+      <i class="feather icon-info" aria-hidden="true"></i>
+      <span>{{ checkoutMessage }}</span>
+      @if (!profile) {
+        <a routerLink="/login">Entrar agora</a>
+      }
+    </section>
+  }
+</main>

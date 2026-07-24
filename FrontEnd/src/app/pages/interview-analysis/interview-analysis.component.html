@@ -1,0 +1,149 @@
+<div class="row">
+  <div class="col-12">
+    <div class="page-heading">
+      <h3>Analise de entrevista</h3>
+      <p class="text-muted mb-0">Upload de audio, transcricao cronometrada e avaliacao estimada com IA.</p>
+    </div>
+  </div>
+
+  <div class="col-xl-4 col-lg-5">
+    <app-card cardTitle="Entrada">
+      <div
+        class="d-flex justify-content-between align-items-center border rounded text-muted mb-3 px-3 py-2"
+        [class.bg-light]="!interviewQuotaExceeded"
+        [class.alert-warning]="interviewQuotaExceeded"
+      >
+        <span>Analises de entrevista</span>
+        <strong class="text-dark">{{ interviewAnalysisCount }}/{{ interviewAnalysisLimit }}</strong>
+      </div>
+
+      <label class="form-label" for="interview-audio">Audio ou video da entrevista</label>
+      <input
+        id="interview-audio"
+        type="file"
+        class="form-control"
+        accept=".flac,.mp3,.mp4,.mpeg,.mpga,.m4a,.ogg,.wav,.webm,audio/*,video/mp4,video/webm"
+        (change)="onAudioSelected($event)"
+        [disabled]="loading"
+      />
+      @if (audioFile) {
+        <div class="selected-file">{{ audioFile.name }}</div>
+      }
+
+      <div class="context-grid mt-3">
+        <div>
+          <label class="form-label" for="candidate-name">Candidato</label>
+          <input id="candidate-name" type="text" class="form-control" [(ngModel)]="candidateName" [disabled]="loading" />
+        </div>
+        <div>
+          <label class="form-label" for="role-title">Cargo</label>
+          <input id="role-title" type="text" class="form-control" [(ngModel)]="roleTitle" [disabled]="loading" />
+        </div>
+        <div>
+          <label class="form-label" for="company-name">Empresa</label>
+          <input id="company-name" type="text" class="form-control" [(ngModel)]="companyName" [disabled]="loading" />
+        </div>
+      </div>
+
+      <label class="form-label mt-3" for="interview-context">Contexto</label>
+      <textarea
+        id="interview-context"
+        class="form-control"
+        rows="3"
+        [(ngModel)]="interviewContext"
+        [disabled]="loading"
+      ></textarea>
+
+      <label class="form-label mt-3" for="job-description">Descricao da vaga</label>
+      <textarea id="job-description" class="form-control" rows="5" [(ngModel)]="jobDescription" [disabled]="loading"></textarea>
+
+      <label class="form-label mt-3" for="custom-instructions">Instrucoes extras</label>
+      <textarea
+        id="custom-instructions"
+        class="form-control"
+        rows="3"
+        [(ngModel)]="customInstructions"
+        [disabled]="loading"
+      ></textarea>
+
+      <button type="button" class="btn btn-primary w-100 mt-3" (click)="analyze()" [disabled]="!canAnalyze">
+        {{ loading ? 'Analisando...' : 'Transcrever e analisar' }}
+      </button>
+
+      @if (interviewQuotaExceeded) {
+        <div class="alert alert-warning py-2 mt-3">Limite de analises de entrevista atingido.</div>
+      }
+
+      @if (error) {
+        <div class="alert alert-danger py-2 mt-3">{{ error }}</div>
+      }
+    </app-card>
+  </div>
+
+  <div class="col-xl-8 col-lg-7">
+    @if (loading) {
+      <app-card cardTitle="Processando">
+        <div class="processing-state">
+          <div class="spinner-border text-primary" role="status"></div>
+          <div>
+            <strong>Extraindo conversa com Whisper Groq barato</strong>
+            <p class="text-muted mb-0">Depois a Pollinations recebe a transcricao com tempos para avaliar a entrevista.</p>
+          </div>
+        </div>
+      </app-card>
+    }
+
+    @if (response) {
+      <app-card cardTitle="Resultado">
+        <div class="warning-box">{{ response.warning }}</div>
+
+        <div class="metrics-grid">
+          <div>
+            <span>Transcricao</span>
+            <strong>{{ response.transcriptionModel }}</strong>
+          </div>
+          <div>
+            <span>Analise</span>
+            <strong>{{ response.analysisModel }}</strong>
+          </div>
+          <div>
+            <span>Duracao</span>
+            <strong>{{ durationLabel }}</strong>
+          </div>
+          <div>
+            <span>Custo Groq estimado</span>
+            <strong>US$ {{ response.estimatedGroqCostUsd.toFixed(6) }} / R$ {{ response.estimatedGroqCostBrl.toFixed(4) }}</strong>
+          </div>
+        </div>
+
+        <div class="result-actions">
+          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="downloadAnalysis()">Baixar analise</button>
+          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="downloadTranscript()">Baixar transcricao</button>
+        </div>
+
+        <section class="analysis-output">
+          <h5>Analise da IA</h5>
+          <div class="analysis-text">{{ response.analysis }}</div>
+        </section>
+
+        <section class="transcript-output">
+          <h5>Transcricao com tempos</h5>
+          <div class="transcript-list">
+            @for (segment of response.segments; track trackSegment($index, segment)) {
+              <div class="transcript-segment">
+                <span>{{ segment.startTime }} - {{ segment.endTime }}</span>
+                <p>{{ segment.text }}</p>
+              </div>
+            }
+          </div>
+        </section>
+      </app-card>
+    }
+
+    @if (!loading && !response) {
+      <app-card cardTitle="Resultado">
+        <div class="empty-state text-muted">Envie um audio para ver a transcricao cronometrada e a avaliacao estimada.</div>
+      </app-card>
+    }
+  </div>
+</div>

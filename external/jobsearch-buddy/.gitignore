@@ -1,0 +1,32 @@
+.env
+CLAUDE.local.md
+.mcp.json
+*.db
+__pycache__/
+*.py[oc]
+.venv/
+*.egg-info/
+dist/
+build/
+wheels/
+.claude/worktrees/
+.claude/tmp/
+.claude/*.lock
+.compound-engineering/*.local.yaml
+!.compound-engineering/*.local.example.yaml
+.cursor/
+.pytest_cache/
+eval/data/
+.DS_Store
+infrastructure/.terraform/
+infrastructure/terraform.tfstate
+infrastructure/terraform.tfstate.backup
+infrastructure/*.tfvars
+scratchpad/
+.context/
+
+.context/
+
+# Claude/dream scratch workspace — never publish (holds dream-scratch run logs
+# with named-company DB analysis and operator activity; public-repo rule)
+claude-workspace/

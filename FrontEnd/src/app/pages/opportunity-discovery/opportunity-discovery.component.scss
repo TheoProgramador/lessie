@@ -1,0 +1,100 @@
+.search-grid {
+  align-items: end;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(220px, 1fr) minmax(180px, 260px) 100px 140px;
+}
+
+.result-meta {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.source-chip {
+  background: #eef6ff;
+  border: 1px solid #cfe8ff;
+  border-radius: 999px;
+  color: #075985;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 6px 9px;
+}
+
+.source-name {
+  color: #64748b;
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.job-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 6px;
+}
+
+.job-tags span {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  color: #334155;
+  font-size: 11px;
+  line-height: 1;
+  padding: 4px 6px;
+}
+
+.state-message {
+  align-items: center;
+  background: #f8fafc;
+  border: 1px solid #e3e8ef;
+  border-radius: 6px;
+  display: flex;
+  justify-content: center;
+  min-height: 180px;
+  padding: 24px;
+  text-align: center;
+}
+
+.opportunity-table table {
+  font-size: 13px;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.opportunity-table th,
+.opportunity-table td {
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.opportunity-table p {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+}
+
+.actions-cell {
+  white-space: nowrap;
+}
+
+.actions-cell .btn + .btn {
+  margin-left: 6px;
+}
+
+@media (max-width: 991px) {
+  .search-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 575px) {
+  .search-grid {
+    grid-template-columns: 1fr;
+  }
+}

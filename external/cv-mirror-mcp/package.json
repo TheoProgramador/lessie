@@ -1,0 +1,66 @@
+{
+  "name": "cv-mirror-mcp",
+  "version": "0.1.0",
+  "description": "MCP server that lints a CV against 5 real ATS parsers (Workday, Greenhouse, Lever, Taleo, iCIMS). Real heuristics from public vendor docs. Works with Claude Code, Cursor, Windsurf, Zed, and any MCP-compatible agent.",
+  "type": "module",
+  "main": "src/index.mjs",
+  "bin": {
+    "cv-mirror-mcp": "src/index.mjs"
+  },
+  "scripts": {
+    "start": "node src/index.mjs",
+    "test": "node test/lint.test.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "mammoth": "^1.8.0",
+    "pdf-parse": "^1.1.1"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "ats",
+    "applicant-tracking-system",
+    "cv",
+    "cv-parser",
+    "resume",
+    "resume-parser",
+    "workday",
+    "greenhouse",
+    "lever",
+    "taleo",
+    "icims",
+    "claude",
+    "claude-skill",
+    "anthropic",
+    "cursor",
+    "windsurf",
+    "zed",
+    "ai-agent",
+    "career",
+    "job-search",
+    "hr-tech"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "Vantage Labs",
+    "url": "https://aimvantage.uk"
+  },
+  "homepage": "https://cv-mirror-web.vercel.app",
+  "bugs": {
+    "url": "https://github.com/goofypluto999/cv-mirror-mcp/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/goofypluto999/cv-mirror-mcp.git"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ]
+}

@@ -1,0 +1,135 @@
+<div class="row">
+  <div class="col-12">
+    <div class="page-heading">
+      <h3>Opportunity Discovery</h3>
+      <p class="text-muted mb-0">External job opportunities and contact data.</p>
+    </div>
+  </div>
+
+  <div class="col-12">
+    <app-card cardTitle="Opportunity Search">
+      <div class="search-grid">
+        <div>
+          <label class="form-label" for="opportunity-query">Keywords</label>
+          <input
+            id="opportunity-query"
+            type="search"
+            class="form-control"
+            [(ngModel)]="query"
+            (keydown)="onSearchKeydown($event)"
+            [disabled]="loading"
+            placeholder=".NET remoto, C#, Angular, SAP..."
+          />
+        </div>
+        <div>
+          <label class="form-label" for="opportunity-location">Location</label>
+          <input
+            id="opportunity-location"
+            type="text"
+            class="form-control"
+            [(ngModel)]="location"
+            [disabled]="loading"
+            placeholder="Home Office, SP, Sao Paulo..."
+          />
+        </div>
+        <div>
+          <label class="form-label" for="opportunity-limit">Limit</label>
+          <input
+            id="opportunity-limit"
+            type="number"
+            class="form-control"
+            min="1"
+            max="80"
+            [(ngModel)]="limit"
+            [disabled]="loading"
+          />
+        </div>
+        <button type="button" class="btn btn-primary" (click)="search()" [disabled]="loading || !query.trim()">
+          Search
+        </button>
+      </div>
+    </app-card>
+  </div>
+
+  <div class="col-12">
+    <app-card cardTitle="Results">
+      @if (loading) {
+        <div class="state-message">Searching opportunities...</div>
+      } @else if (error) {
+        <div class="alert alert-danger py-2 mb-0">{{ error }}</div>
+      } @else if (hasSearched && results.length === 0) {
+        <div class="state-message text-muted">No opportunities found.</div>
+      } @else if (results.length > 0) {
+        <div class="result-meta">
+          <span>{{ response?.summary }}</span>
+          <span class="source-chip">{{ response?.source }}</span>
+        </div>
+
+        <div class="table-responsive opportunity-table">
+          <table class="table table-hover align-middle mb-0">
+            <colgroup>
+              <col style="width: 8%" />
+              <col style="width: 18%" />
+              <col style="width: 13%" />
+              <col style="width: 13%" />
+              <col style="width: 8%" />
+              <col style="width: 12%" />
+              <col style="width: 28%" />
+            </colgroup>
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Title</th>
+                <th>Company</th>
+                <th>Location</th>
+                <th>Date</th>
+                <th>Origin</th>
+                <th class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (job of results; track trackJob($index, job)) {
+                <tr>
+                  <td>{{ job.id }}</td>
+                  <td>
+                    <strong>{{ job.title }}</strong>
+                    <p class="text-muted small mb-0">{{ job.description }}</p>
+                    @if (job.salary || job.employmentType || job.remoteType) {
+                      <div class="job-tags">
+                        @if (job.salary) {
+                          <span>{{ job.salary }}</span>
+                        }
+                        @if (job.employmentType) {
+                          <span>{{ job.employmentType }}</span>
+                        }
+                        @if (job.remoteType) {
+                          <span>{{ job.remoteType }}</span>
+                        }
+                      </div>
+                    }
+                  </td>
+                  <td>{{ job.company }}</td>
+                  <td>{{ job.location }}</td>
+                  <td>{{ job.date }}</td>
+                  <td>
+                    <span class="source-chip">{{ job.provider || 'External' }}</span>
+                    <div class="source-name">{{ job.source }}</div>
+                  </td>
+                  <td class="text-end actions-cell">
+                    @if (job.applyUrl) {
+                      <a class="btn btn-outline-secondary btn-sm" [href]="job.applyUrl" target="_blank" rel="noreferrer">
+                        Open
+                      </a>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <div class="state-message text-muted">Run a search to list opportunities.</div>
+      }
+    </app-card>
+  </div>
+</div>

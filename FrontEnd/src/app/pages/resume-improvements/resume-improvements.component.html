@@ -1,0 +1,393 @@
+<div class="row">
+  <div class="col-12">
+    <div class="page-heading">
+      <h3>Melhorias do curriculo</h3>
+      <p class="text-muted mb-0">Otimize o curriculo com IA, perguntas guiadas e aderencia a vagas.</p>
+    </div>
+  </div>
+
+  <div class="col-xl-4 col-lg-5">
+    <app-card cardTitle="Arquivos">
+      <div class="d-flex justify-content-between align-items-center bg-light border rounded text-muted mb-3 px-3 py-2">
+        <span>Analises de curriculo</span>
+        <strong class="text-dark">{{ resumeAnalysisCount }}/{{ resumeAnalysisLimit }}</strong>
+      </div>
+
+      <div class="upload-field">
+        <label class="form-label" for="resume-file">Curriculo em PDF ou DOCX</label>
+        <input
+          id="resume-file"
+          type="file"
+          class="form-control"
+          accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          [disabled]="analyzing"
+          (change)="onResumeSelected($event)"
+        />
+        @if (resumeFile) {
+          <div class="file-name">{{ resumeFile.name }}</div>
+        }
+      </div>
+
+      <div class="upload-field">
+        <label class="form-label" for="job-screenshots">Prints de vagas</label>
+        <input id="job-screenshots" type="file" class="form-control" accept="image/*" multiple [disabled]="analyzing" (change)="onScreenshotsSelected($event)" />
+        @if (jobScreenshots.length > 0) {
+          <div class="file-list">
+            @for (file of jobScreenshots; track file.name) {
+              <span>{{ file.name }}</span>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="upload-field border-top pt-3">
+        <div class="form-label">Contextos adicionais</div>
+        <div class="upload-field">
+          <label class="form-label" for="linkedin-profile">LinkedIn em PDF ou DOCX</label>
+          <input
+            id="linkedin-profile"
+            type="file"
+            class="form-control"
+            accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            [disabled]="analyzing"
+            (change)="onLinkedInProfileSelected($event)"
+          />
+          @if (linkedinProfileFile) {
+            <div class="file-name">{{ linkedinProfileFile.name }}</div>
+          }
+        </div>
+
+        <div class="upload-field">
+          <label class="form-label" for="linkedin-profile-url">LinkedIn publico</label>
+          <input
+            id="linkedin-profile-url"
+            type="url"
+            class="form-control"
+            [(ngModel)]="linkedinProfileUrl"
+            (ngModelChange)="onProfileLinksChanged()"
+            [disabled]="analyzing"
+            placeholder="https://www.linkedin.com/in/usuario"
+          />
+        </div>
+
+        <div class="upload-field">
+          <label class="form-label" for="github-profile">GitHub</label>
+          <input id="github-profile" type="url" class="form-control" [(ngModel)]="githubProfileUrl" (ngModelChange)="onProfileLinksChanged()" [disabled]="analyzing" placeholder="https://github.com/usuario" />
+        </div>
+
+        <div class="upload-field">
+          <label class="form-label" for="portfolio-url">Portfolio</label>
+          <input id="portfolio-url" type="url" class="form-control" [(ngModel)]="portfolioUrl" (ngModelChange)="onProfileLinksChanged()" [disabled]="analyzing" placeholder="https://seuportfolio.com" />
+          @if (profileLinksSaveStatus) {
+            <div class="file-name">{{ profileLinksSaveStatus }}</div>
+          }
+        </div>
+
+        <div class="upload-field">
+          <label class="form-label" for="job-description">Texto da vaga</label>
+          <textarea id="job-description" class="form-control" rows="3" [(ngModel)]="jobDescription" [disabled]="analyzing"></textarea>
+        </div>
+
+        <div class="upload-field">
+          <label class="form-label" for="personal-info">Informacoes pessoais/profissionais</label>
+          <textarea id="personal-info" class="form-control" rows="3" [(ngModel)]="personalInfo" [disabled]="analyzing"></textarea>
+        </div>
+
+        <div class="upload-field">
+          <label class="form-label" for="custom-instructions">Instrucoes customizadas</label>
+          <textarea id="custom-instructions" class="form-control" rows="3" [(ngModel)]="customInstructions" [disabled]="analyzing"></textarea>
+        </div>
+      </div>
+
+      <button type="button" class="btn btn-primary w-100" (click)="analyze()" [disabled]="!canAnalyze || analyzing">
+        @if (analyzing) {
+          Analisando...
+        } @else {
+          {{ analyzeButtonLabel }}
+        }
+      </button>
+
+      @if (error) {
+        <div class="alert alert-danger py-2 mt-3">{{ error }}</div>
+      }
+    </app-card>
+
+    <app-card cardTitle="Exportar" class="export-card">
+      @if (optimizedResume) {
+        <div class="export-actions">
+          <button type="button" class="btn btn-outline-primary" (click)="export('docx')" [disabled]="exporting">Baixar DOCX</button>
+          <button type="button" class="btn btn-outline-secondary" (click)="export('pdf')" [disabled]="exporting">Baixar PDF</button>
+        </div>
+      } @else {
+        <div class="text-muted">A versao otimizada aparecera aqui depois da analise.</div>
+      }
+    </app-card>
+
+    @if (atsAnalysis) {
+      <app-card cardTitle="Score ATS" class="ats-card">
+        <div class="ats-score-summary">
+          <div class="ats-score-number" [ngClass]="atsScoreClass">{{ atsAnalysis.overallScore }}</div>
+          <div>
+            <div class="ats-score-label">{{ atsAnalysis.provider }}</div>
+            <div class="history-meta">Atualizado em {{ atsAnalysis.analyzedAt | date: 'dd/MM/yyyy HH:mm' }}</div>
+            @if (atsAnalysis.matchRecommendation) {
+              <div class="ats-recommendation-mode">{{ atsAnalysis.matchRecommendation }}</div>
+            }
+          </div>
+          <div class="ats-action-group">
+            <button
+              type="button"
+              class="btn btn-primary btn-sm ats-optimize-button"
+              [disabled]="loading || analyzing || !optimizedResume"
+              (click)="optimizeFromAtsSuggestions()"
+            >
+              Otimizar
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-primary btn-sm ats-optimize-button"
+              [disabled]="loading || analyzing || !optimizedResume || !atsAnalysis.keywordStrategy.length"
+              (click)="optimizeKeywordStrategy()"
+            >
+              Keywords
+            </button>
+          </div>
+        </div>
+
+        @if (atsAnalysis.subscores && (atsAnalysis.subscores | keyvalue).length > 0) {
+          <div class="ats-subscore-grid">
+            @for (subscore of atsAnalysis.subscores | keyvalue; track subscore.key) {
+              <div class="ats-subscore">
+                <span>{{ formatAtsLabel(subscore.key) }}</span>
+                <strong>{{ subscore.value }}</strong>
+              </div>
+            }
+          </div>
+        }
+
+        <div class="ats-section-list">
+          @for (section of atsAnalysis.sections; track section.name) {
+            <div class="ats-section">
+              <div class="ats-section-head">
+                <span>{{ section.name }}</span>
+                <strong>{{ section.score }}/100</strong>
+              </div>
+              <div class="ats-section-bar">
+                <span [ngStyle]="{ width: section.score + '%' }" [ngClass]="section.status"></span>
+              </div>
+            </div>
+          }
+        </div>
+
+        @if (atsAnalysis.keywordsPresent.length || atsAnalysis.keywordsMissing.length || atsAnalysis.keywordsPartial.length) {
+          <div class="ats-keyword-groups">
+            @if (atsAnalysis.keywordsPresent.length) {
+              <div>
+                <div class="ats-mini-title">Keywords presentes</div>
+                <div class="ats-chip-list">
+                  @for (keyword of atsAnalysis.keywordsPresent.slice(0, 10); track keyword) {
+                    <span class="ats-chip ats-chip-good">{{ keyword }}</span>
+                  }
+                </div>
+              </div>
+            }
+            @if (atsAnalysis.keywordsMissing.length) {
+              <div>
+                <div class="ats-mini-title">Keywords ausentes</div>
+                <div class="text-muted small mb-2">
+                  Selecione apenas as palavras que fazem sentido para tentar incluir na proxima otimizacao.
+                </div>
+                <div class="ats-chip-list">
+                  @for (keyword of atsAnalysis.keywordsMissing.slice(0, 10); track keyword) {
+                    <button
+                      type="button"
+                      class="ats-chip ats-chip-risk border-0"
+                      [class.border]="isMissingKeywordSelected(keyword)"
+                      [class.border-primary]="isMissingKeywordSelected(keyword)"
+                      [class.fw-bold]="isMissingKeywordSelected(keyword)"
+                      [attr.aria-pressed]="isMissingKeywordSelected(keyword)"
+                      [disabled]="loading || analyzing"
+                      (click)="toggleMissingKeyword(keyword)"
+                    >
+                      {{ keyword }}
+                    </button>
+                  }
+                </div>
+                @if (selectedMissingKeywordList.length) {
+                  <button type="button" class="btn btn-link btn-sm px-0 mt-2" (click)="clearSelectedMissingKeywords()">
+                    Limpar selecionadas
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        }
+
+        @if (atsAnalysis.keywordStrategy.length) {
+          <div class="ats-keyword-groups">
+            <div class="ats-mini-title">Estrategia por secao</div>
+            @for (item of atsAnalysis.keywordStrategy.slice(0, 4); track item.group) {
+              <div class="ats-strategy-row">
+                <span>{{ item.group }} -> {{ item.targetSection }}</span>
+                <div class="ats-chip-list">
+                  @for (keyword of item.keywords.slice(0, 6); track keyword) {
+                    <span class="ats-chip">{{ keyword }}</span>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        @if (atsAnalysis.criticalGaps.length) {
+          <div class="ats-recommendations">
+            <div class="ats-mini-title">Gaps criticos</div>
+            @for (gap of atsAnalysis.criticalGaps.slice(0, 4); track gap) {
+              <div>{{ gap }}</div>
+            }
+          </div>
+        }
+
+        @if (atsAnalysis.recommendations.length > 0) {
+          <div class="ats-recommendations">
+            @for (recommendation of atsAnalysis.recommendations.slice(0, 4); track recommendation) {
+              <div>{{ recommendation }}</div>
+            }
+          </div>
+        }
+      </app-card>
+    }
+
+    @if (atsAnalysis?.jobSearchKeywords?.length) {
+      <app-card cardTitle="Palavras-chave para vagas" class="ats-card">
+        <div class="ats-keyword-groups">
+          <div class="ats-mini-title">Termos fortes encontrados no curriculo</div>
+          <div class="ats-chip-list">
+            @for (keyword of atsAnalysis.jobSearchKeywords; track keyword) {
+              <button type="button" class="btn btn-outline-primary btn-sm" (click)="openJobSearch(keyword)">
+                {{ keyword }}
+              </button>
+            }
+          </div>
+          <button type="button" class="btn btn-primary btn-sm mt-3" (click)="openJobSearchWithTopKeywords()">
+            Buscar combinadas
+          </button>
+        </div>
+      </app-card>
+    }
+
+    <app-card cardTitle="Historico" class="history-card">
+      @if (historyError) {
+        <div class="alert alert-warning py-2 mb-0">{{ historyError }}</div>
+      } @else if (loadingHistoryList && !historyLoaded) {
+        <div class="text-muted">Carregando historico...</div>
+      } @else if (history.length > 0) {
+        <div class="history-list">
+          @for (item of history; track trackHistoryItem($index, item)) {
+            <div class="history-item" [class.history-item-active]="item.id === sessionId">
+              @if (renamingSessionId === item.id) {
+                <div class="history-rename">
+                  <input
+                    type="text"
+                    class="form-control form-control-sm"
+                    [(ngModel)]="renameTitle"
+                    [disabled]="savingRename"
+                    maxlength="300"
+                    (click)="$event.stopPropagation()"
+                    (keydown)="onRenameKeydown($event, item)"
+                    aria-label="Titulo do historico"
+                  />
+                  <button type="button" class="history-action" title="Salvar titulo" [disabled]="savingRename || !renameTitle.trim()" (click)="saveRename($event, item)">
+                    Salvar
+                  </button>
+                  <button type="button" class="history-delete" title="Cancelar" [disabled]="savingRename" (click)="cancelRename($event)">
+                    &times;
+                  </button>
+                </div>
+              } @else {
+                <button type="button" class="history-open" [disabled]="loadingHistory || analyzing || loading" (click)="loadSession(item.id)">
+                  <span class="history-title">{{ item.title }}</span>
+                  <span class="history-meta">{{ item.updatedAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+                </button>
+                <button type="button" class="history-action" title="Renomear" [disabled]="loadingHistory || analyzing || loading" (click)="startRename($event, item)">
+                  Editar
+                </button>
+                <button type="button" class="history-delete" title="Apagar" [disabled]="loadingHistory || analyzing || loading" (click)="deleteSession($event, item.id)">
+                  &times;
+                </button>
+              }
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="text-muted">Nenhum historico salvo ainda.</div>
+      }
+    </app-card>
+  </div>
+
+  <div class="col-xl-8 col-lg-7">
+    <app-card cardTitle="Conversa de melhoria">
+      <div #conversationList class="conversation-list">
+        @if (messages.length === 0) {
+          <div class="empty-state text-muted">Envie o curriculo para iniciar a analise.</div>
+        }
+        @for (message of messages; track trackMessage($index)) {
+          <div class="message-row" [class.message-row-user]="message.role === 'user'">
+            <div class="message-bubble" [class.message-bubble-user]="message.role === 'user'">
+              @for (line of formatPreviewLines(message.content); track trackPreviewLine($index)) {
+                @switch (line.kind) {
+                  @case ('heading') {
+                    <div class="message-line message-heading">{{ line.text }}</div>
+                  }
+                  @case ('subheading') {
+                    <div class="message-line message-subheading">{{ line.text }}</div>
+                  }
+                  @case ('bullet') {
+                    <div class="message-line message-bullet">{{ line.text }}</div>
+                  }
+                  @default {
+                    <div class="message-line">{{ line.text }}</div>
+                  }
+                }
+              }
+            </div>
+          </div>
+        }
+        @if (aiIsWorking) {
+          <div class="message-row">
+            <div class="message-bubble message-loading">
+              <span>{{ aiWorkingMessage }}</span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="composer mt-3">
+        <textarea
+          class="form-control"
+          rows="3"
+          [(ngModel)]="messageInput"
+          (paste)="onComposerPaste($event)"
+          (keydown)="onComposerKeydown($event)"
+          [disabled]="loading || analyzing || !resumeText"
+          placeholder="Responda as duvidas da IA ou peca um ajuste especifico"
+        ></textarea>
+        <button type="button" class="btn btn-primary" (click)="sendMessage()" [disabled]="loading || analyzing || !messageInput.trim() || !resumeText">Enviar</button>
+      </div>
+    </app-card>
+
+    <app-card cardTitle="Versao otimizada">
+      @if (optimizedResume) {
+        <div class="d-flex justify-content-end align-items-center gap-3 mb-2">
+          <span class="small text-muted">{{ editorSaveStatus }}</span>
+          <button type="button" class="btn btn-primary btn-sm" (click)="saveEditedResumeNow()" [disabled]="savingEditor || !sessionId">Salvar</button>
+        </div>
+        <div class="resume-editor-shell">
+          <div #quillEditor></div>
+        </div>
+      } @else {
+        <div class="empty-preview text-muted">A IA vai gerar a versao otimizada conforme coleta informacoes suficientes.</div>
+      }
+    </app-card>
+  </div>
+</div>
