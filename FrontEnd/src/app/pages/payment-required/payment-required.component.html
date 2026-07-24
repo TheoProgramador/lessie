@@ -1,0 +1,30 @@
+<div class="row">
+  <div class="col-xl-6 col-lg-8">
+    <app-card cardTitle="Acesso bloqueado">
+      <p class="text-muted mb-3">
+        O pagamento deste usuario esta pendente ou o prazo de acesso expirou.
+      </p>
+
+      @if (profile) {
+        <div class="access-box">
+          <div>
+            <strong>{{ profile.name }}</strong>
+            <div class="text-muted">{{ profile.email }}</div>
+          </div>
+          <div>
+            @if (profile.paidUntil) {
+              Vencimento: {{ profile.paidUntil | date: 'dd/MM/yyyy HH:mm' }}
+            } @else {
+              Sem vencimento ativo cadastrado.
+            }
+          </div>
+        </div>
+      }
+
+      <div class="d-flex gap-2 mt-4 flex-wrap">
+        <a routerLink="/credits" class="btn btn-primary">Comprar creditos</a>
+        <button type="button" class="btn btn-outline-secondary" (click)="logout()">Sair</button>
+      </div>
+    </app-card>
+  </div>
+</div>

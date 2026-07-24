@@ -1,0 +1,176 @@
+.search-panel {
+  align-items: end;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.example-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.result-meta {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.source-chip {
+  background: #eef6ff;
+  border: 1px solid #cfe8ff;
+  border-radius: 999px;
+  color: #075985;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 6px 9px;
+}
+
+.state-message,
+.activity-panel,
+.person-card {
+  background: #f8fafc;
+  border: 1px solid #e3e8ef;
+  border-radius: 6px;
+}
+
+.state-message {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-height: 180px;
+  padding: 24px;
+  text-align: center;
+}
+
+.activity-panel {
+  margin-bottom: 14px;
+  padding: 12px;
+}
+
+.activity-header {
+  align-items: center;
+  display: flex;
+  font-weight: 600;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.activity-percent {
+  color: #075985;
+}
+
+.activity-progress {
+  height: 6px;
+  margin-bottom: 10px;
+}
+
+.activity-list {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.activity-list li {
+  align-items: center;
+  color: #334155;
+  display: flex;
+  gap: 8px;
+  min-height: 20px;
+}
+
+.activity-text {
+  display: grid;
+  min-width: 0;
+}
+
+.activity-list small,
+.activity-list strong {
+  color: #075985;
+  font-size: 12px;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.activity-dot {
+  background: var(--activity-dot, #04a9f5);
+  border-radius: 999px;
+  flex: 0 0 7px;
+  height: 7px;
+  width: 7px;
+}
+
+.activity-error {
+  --activity-dot: #ef4444;
+  color: #b42318;
+}
+
+.activity-warning {
+  --activity-dot: #f59e0b;
+  color: #92400e;
+}
+
+.discovery-table table {
+  font-size: 13px;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.discovery-table th,
+.discovery-table td {
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.mobile-results {
+  display: none;
+}
+
+.person-card {
+  padding: 14px;
+}
+
+.person-card + .person-card {
+  margin-top: 10px;
+}
+
+.person-card dl {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+@media (max-width: 767px) {
+  .search-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .search-button {
+    width: 100%;
+  }
+
+  .result-meta {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .discovery-table {
+    display: none;
+  }
+
+  .posts-results-section .discovery-table {
+    display: block;
+  }
+
+  .mobile-results {
+    display: block;
+  }
+}

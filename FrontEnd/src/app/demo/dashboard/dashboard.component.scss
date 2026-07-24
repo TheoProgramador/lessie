@@ -1,0 +1,50 @@
+.profile-photo {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-photo-placeholder {
+  align-items: center;
+  background: #f4f7fa;
+  display: flex;
+  justify-content: center;
+}
+
+.credit-summary {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.credit-summary div {
+  background: #f8fafc;
+  border: 1px solid #dbe3ea;
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.credit-summary span,
+.credit-summary strong {
+  display: block;
+}
+
+.credit-summary span {
+  color: #5d6b80;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.credit-summary strong {
+  color: #0f766e;
+  font-size: 1.5rem;
+  line-height: 1;
+  margin-top: 8px;
+}
+
+@media (max-width: 640px) {
+  .credit-summary {
+    grid-template-columns: 1fr;
+  }
+}

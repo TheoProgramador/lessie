@@ -1,0 +1,558 @@
+<div class="row">
+  <div class="col-12">
+    <div class="page-heading">
+      <h3>{{ pageTitle }}</h3>
+      <p class="text-muted mb-0">{{ pageDescription }}</p>
+    </div>
+  </div>
+
+  @if (showPeopleSearch) {
+  <div class="col-12 order-1">
+    <app-card cardTitle="People Search">
+      <div class="search-panel">
+        <div class="search-field">
+          <label class="form-label" for="people-discovery-query">Search people</label>
+          <input
+            id="people-discovery-query"
+            type="search"
+            class="form-control"
+            [(ngModel)]="query"
+            (keydown)="onSearchKeydown($event)"
+            [disabled]="loading"
+            placeholder="Search for recruiters, developers, companies or roles..."
+          />
+        </div>
+        <button type="button" class="btn btn-primary search-button" (click)="search()" [disabled]="loading || !query.trim()">
+          Search
+        </button>
+      </div>
+
+      <div class="example-row" aria-label="People Discovery examples">
+        @for (example of examples; track example) {
+          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="runExample(example)" [disabled]="loading">
+            {{ example }}
+          </button>
+        }
+      </div>
+    </app-card>
+  </div>
+  }
+
+  @if (showPostSearch) {
+  <div class="col-12 order-3">
+    <app-card cardTitle="LinkedIn Posts Search">
+      <div class="row g-3 align-items-end">
+        <div class="col-xl-7 col-md-12">
+          <label class="form-label" for="people-discovery-post-query">Search posts</label>
+          <input
+            id="people-discovery-post-query"
+            type="search"
+            class="form-control"
+            [(ngModel)]="postQuery"
+            (keydown)="onPostsKeydown($event)"
+            [disabled]="postsLoading"
+            placeholder="Search hiring posts with email, WhatsApp or direct contact..."
+          />
+        </div>
+        <div class="col-xl-3 col-md-6">
+          <label class="form-label" for="people-discovery-post-location">Location</label>
+          <input
+            id="people-discovery-post-location"
+            type="text"
+            class="form-control"
+            [(ngModel)]="postLocation"
+            [disabled]="postsLoading"
+            placeholder="Brazil, Sao Paulo, Remote..."
+          />
+        </div>
+        <div class="col-xl-2 col-md-6">
+          <button type="button" class="btn btn-primary w-100" (click)="searchPosts()" [disabled]="postsLoading || !postQuery.trim()">
+            Search Posts
+          </button>
+        </div>
+      </div>
+
+      <div class="example-row" aria-label="LinkedIn Posts examples">
+        @for (example of postExamples; track example) {
+          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="runPostExample(example)" [disabled]="postsLoading">
+            {{ example }}
+          </button>
+        }
+      </div>
+    </app-card>
+  </div>
+
+  <div class="col-12 posts-results-section order-4">
+    <app-card cardTitle="LinkedIn Posts Results">
+      @if (postsProgressEvents.length > 0) {
+        <div class="activity-panel">
+          <div class="activity-header">
+            <span>Activity</span>
+            @if (postsProgressEvents[postsProgressEvents.length - 1].progress !== null && postsProgressEvents[postsProgressEvents.length - 1].progress !== undefined) {
+              <span class="activity-percent">
+                {{ postsProgressEvents[postsProgressEvents.length - 1].progress }}%
+              </span>
+            }
+          </div>
+
+          @if (postsProgressEvents[postsProgressEvents.length - 1].progress !== null && postsProgressEvents[postsProgressEvents.length - 1].progress !== undefined) {
+            <div class="progress activity-progress" role="progressbar">
+              <div class="progress-bar" [style.width.%]="postsProgressEvents[postsProgressEvents.length - 1].progress"></div>
+            </div>
+          }
+
+          <ol class="activity-list">
+            @for (event of postsProgressEvents; track trackProgress($index)) {
+              <li [ngClass]="activityClass(event)">
+                <span class="activity-dot"></span>
+                <span class="activity-text">
+                  <span>{{ event.message }}</span>
+                  @if (event.details) {
+                    <pre class="text-muted small mb-0 text-break">{{ event.details }}</pre>
+                  }
+                </span>
+                @if (shouldShowPeopleCount(event)) {
+                  <strong>{{ event.peopleCount }} found</strong>
+                }
+                @if (event.elapsedSeconds) {
+                  <small>{{ event.elapsedSeconds }}s</small>
+                }
+              </li>
+            }
+          </ol>
+        </div>
+      }
+
+      @if (postsLoading) {
+        <div class="state-message">Searching LinkedIn posts...</div>
+      } @else if (postsError) {
+        <div class="alert alert-danger py-2 mb-0">{{ postsError }}</div>
+      } @else if (postsHasSearched && postResults.length === 0) {
+        <div class="state-message text-muted">No posts with contact information found for this search.</div>
+      } @else if (postResults.length > 0) {
+        <div class="result-meta">
+          <span>{{ postsResponse?.summary }}</span>
+          <span class="source-chip">{{ postsResponse?.source }}</span>
+        </div>
+
+        <div class="table-responsive discovery-table">
+          <table class="table table-hover align-middle mb-0">
+            <colgroup>
+              <col style="width: 6%" />
+              <col style="width: 13%" />
+              <col style="width: 29%" />
+              <col style="width: 18%" />
+              <col style="width: 14%" />
+              <col style="width: 10%" />
+              <col style="width: 10%" />
+            </colgroup>
+            <thead>
+              <tr>
+                <th>Sent</th>
+                <th>Author</th>
+                <th>Post</th>
+                <th>Contact</th>
+                <th>Context</th>
+                <th>Source</th>
+                <th class="text-end">Link</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (post of postResults; track trackPost($index, post)) {
+                <tr>
+                  <td>
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      [disabled]="!post.resultKey || markingResumeSent.has(post.resultKey)"
+                      [checked]="post.resumeSent"
+                      (change)="markResumeSent(post)"
+                      aria-label="Mark resume as sent"
+                    />
+                  </td>
+                  <td><strong>{{ post.name }}</strong></td>
+                  <td>{{ post.title }}</td>
+                  <td>{{ post.contactInfo }}</td>
+                  <td>{{ post.company || post.location }}</td>
+                  <td><span class="source-chip source-chip-light">{{ post.source }}</span></td>
+                  <td class="text-end">
+                    <a class="btn btn-outline-primary btn-sm px-2" [href]="post.profileUrl" target="_blank" rel="noreferrer">
+                      Open
+                    </a>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <div class="state-message text-muted">Run a posts search to find public contact details from hiring posts.</div>
+      }
+    </app-card>
+  </div>
+  }
+
+  @if (showJobSearch) {
+  <div class="col-12 order-5">
+    <app-card cardTitle="LinkedIn Jobs">
+      <div class="row g-3 align-items-end">
+        <div class="col-xl-3 col-md-6">
+          <label class="form-label" for="job-keywords">Keywords</label>
+          <input
+            id="job-keywords"
+            type="search"
+            class="form-control"
+            [(ngModel)]="jobSearch.keywords"
+            (keydown)="onJobsKeydown($event)"
+            [disabled]="jobsLoading"
+            placeholder="backend developer, .NET senior, angular..."
+          />
+        </div>
+        <div class="col-xl-2 col-md-6">
+          <label class="form-label" for="job-location">Location</label>
+          <input
+            id="job-location"
+            type="text"
+            class="form-control"
+            [(ngModel)]="jobSearch.location"
+            [disabled]="jobsLoading"
+            placeholder="Brazil, Remote, Sao Paulo..."
+          />
+        </div>
+        <div class="col-xl-1 col-md-3">
+          <label class="form-label" for="job-pages">Pages</label>
+          <input
+            id="job-pages"
+            type="number"
+            class="form-control"
+            min="1"
+            max="5"
+            [(ngModel)]="jobSearch.maxPages"
+            [disabled]="jobsLoading"
+          />
+        </div>
+        <div class="col-xl-2 col-md-3">
+          <label class="form-label" for="job-date-posted">Date</label>
+          <select id="job-date-posted" class="form-select" [(ngModel)]="jobSearch.datePosted" [disabled]="jobsLoading">
+            @for (option of datePostedOptions; track option.value) {
+              <option [value]="option.value">{{ option.label }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-xl-2 col-md-4">
+          <label class="form-label" for="job-type">Type</label>
+          <select id="job-type" class="form-select" [(ngModel)]="jobSearch.jobType" [disabled]="jobsLoading">
+            @for (option of jobTypeOptions; track option.value) {
+              <option [value]="option.value">{{ option.label }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-xl-2 col-md-4">
+          <label class="form-label" for="job-experience">Experience</label>
+          <select id="job-experience" class="form-select" [(ngModel)]="jobSearch.experienceLevel" [disabled]="jobsLoading">
+            @for (option of experienceLevelOptions; track option.value) {
+              <option [value]="option.value">{{ option.label }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-xl-2 col-md-4">
+          <label class="form-label" for="job-work-type">Work</label>
+          <select id="job-work-type" class="form-select" [(ngModel)]="jobSearch.workType" [disabled]="jobsLoading">
+            @for (option of workTypeOptions; track option.value) {
+              <option [value]="option.value">{{ option.label }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-xl-2 col-md-4">
+          <label class="form-label" for="job-sort">Sort</label>
+          <select id="job-sort" class="form-select" [(ngModel)]="jobSearch.sortBy" [disabled]="jobsLoading">
+            @for (option of sortOptions; track option.value) {
+              <option [value]="option.value">{{ option.label }}</option>
+            }
+          </select>
+        </div>
+        <label class="col-xl-1 col-md-4 d-inline-flex align-items-center gap-2" for="job-easy-apply">
+          <input id="job-easy-apply" type="checkbox" [(ngModel)]="jobSearch.easyApply" [disabled]="jobsLoading" />
+          <span>Easy Apply</span>
+        </label>
+        <div class="col-xl-2 col-md-4">
+          <button
+            type="button"
+            class="btn btn-primary w-100"
+            (click)="searchJobs()"
+            [disabled]="jobsLoading || !jobSearch.keywords.trim()"
+          >
+            Search Jobs
+          </button>
+        </div>
+      </div>
+
+      @if (jobsProgressEvents.length > 0) {
+        <div class="activity-panel mt-3">
+          <div class="activity-header">
+            <span>Activity</span>
+            @if (jobsProgressEvents[jobsProgressEvents.length - 1].progress !== null && jobsProgressEvents[jobsProgressEvents.length - 1].progress !== undefined) {
+              <span class="activity-percent">
+                {{ jobsProgressEvents[jobsProgressEvents.length - 1].progress }}%
+              </span>
+            }
+          </div>
+
+          @if (jobsProgressEvents[jobsProgressEvents.length - 1].progress !== null && jobsProgressEvents[jobsProgressEvents.length - 1].progress !== undefined) {
+            <div class="progress activity-progress" role="progressbar">
+              <div class="progress-bar" [style.width.%]="jobsProgressEvents[jobsProgressEvents.length - 1].progress"></div>
+            </div>
+          }
+
+          <ol class="activity-list">
+            @for (event of jobsProgressEvents; track trackProgress($index)) {
+              <li [ngClass]="activityClass(event)">
+                <span class="activity-dot"></span>
+                <span class="activity-text">
+                  <span>{{ event.message }}</span>
+                  @if (event.details) {
+                    <pre class="text-muted small mb-0 text-break">{{ event.details }}</pre>
+                  }
+                </span>
+                @if (event.elapsedSeconds) {
+                  <small>{{ event.elapsedSeconds }}s</small>
+                }
+              </li>
+            }
+          </ol>
+        </div>
+      }
+
+      @if (jobsLoading) {
+        <div class="state-message mt-3">Searching LinkedIn jobs...</div>
+      } @else if (jobsError) {
+        <div class="alert alert-danger py-2 mt-3 mb-0">{{ jobsError }}</div>
+      } @else if (jobsHasSearched && jobResults.length === 0) {
+        <div class="state-message text-muted mt-3">No jobs found for this search.</div>
+      } @else if (jobResults.length > 0) {
+        <div class="result-meta mt-3">
+          <span>{{ jobsResponse?.summary }}</span>
+          <span class="source-chip">{{ jobsResponse?.source }}</span>
+        </div>
+        <div class="table-responsive discovery-table">
+          <table class="table table-hover align-middle mb-0">
+            <colgroup>
+              <col style="width: 6%" />
+              <col style="width: 23%" />
+              <col style="width: 17%" />
+              <col style="width: 15%" />
+              <col style="width: 18%" />
+              <col style="width: 13%" />
+              <col style="width: 8%" />
+            </colgroup>
+            <thead>
+              <tr>
+                <th>Sent</th>
+                <th>Title</th>
+                <th>Company</th>
+                <th>Location</th>
+                <th>Insight</th>
+                <th>Metadata</th>
+                <th class="text-end">Job</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (job of jobResults; track trackJob($index, job)) {
+                <tr>
+                  <td>
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      [disabled]="!job.resultKey || markingResumeSent.has(job.resultKey)"
+                      [checked]="job.resumeSent"
+                      (change)="markResumeSent(job, 'jobs')"
+                      aria-label="Mark resume as sent"
+                    />
+                  </td>
+                  <td><strong>{{ job.title || job.jobId }}</strong></td>
+                  <td>{{ job.company }}</td>
+                  <td>{{ job.location }}</td>
+                  <td>{{ job.insight }}</td>
+                  <td>{{ job.metadata }}</td>
+                  <td class="text-end">
+                    <a class="btn btn-outline-primary btn-sm px-2" [href]="job.jobUrl" target="_blank" rel="noreferrer">
+                      Open
+                    </a>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </app-card>
+  </div>
+  }
+
+  @if (showPeopleSearch) {
+  <div class="col-12 order-2">
+    <app-card cardTitle="People Results">
+      @if (progressEvents.length > 0) {
+        <div class="activity-panel">
+          <div class="activity-header">
+            <span>Activity</span>
+            @if (progressEvents[progressEvents.length - 1].progress !== null && progressEvents[progressEvents.length - 1].progress !== undefined) {
+              <span class="activity-percent">
+                {{ progressEvents[progressEvents.length - 1].progress }}%
+              </span>
+            }
+          </div>
+
+          @if (progressEvents[progressEvents.length - 1].progress !== null && progressEvents[progressEvents.length - 1].progress !== undefined) {
+            <div class="progress activity-progress" role="progressbar">
+              <div
+                class="progress-bar"
+                [style.width.%]="progressEvents[progressEvents.length - 1].progress"
+              ></div>
+            </div>
+          }
+
+          <ol class="activity-list">
+            @for (event of progressEvents; track trackProgress($index)) {
+              <li [ngClass]="activityClass(event)">
+                <span class="activity-dot"></span>
+                <span class="activity-text">
+                  <span>{{ event.message }}</span>
+                  @if (event.details) {
+                    <pre class="text-muted small mb-0 text-break">{{ event.details }}</pre>
+                  }
+                </span>
+                @if (shouldShowPeopleCount(event)) {
+                  <strong>{{ event.peopleCount }} found</strong>
+                }
+                @if (event.elapsedSeconds) {
+                  <small>{{ event.elapsedSeconds }}s</small>
+                }
+              </li>
+            }
+          </ol>
+        </div>
+      }
+
+      @if (loading) {
+        <div class="state-message">Searching people...</div>
+      } @else if (error) {
+        <div class="alert alert-danger py-2 mb-0">{{ error }}</div>
+      } @else if (hasSearched && results.length === 0) {
+        <div class="state-message text-muted">No people found for this search.</div>
+      } @else if (results.length > 0) {
+        <div class="result-meta">
+          <span>{{ response?.summary }}</span>
+          <span class="source-chip">{{ response?.source }}</span>
+        </div>
+
+        <div class="table-responsive discovery-table">
+          <table class="table table-hover align-middle mb-0">
+            <colgroup>
+              <col style="width: 6%" />
+              <col style="width: 13%" />
+              <col style="width: 23%" />
+              <col style="width: 13%" />
+              <col style="width: 12%" />
+              <col style="width: 17%" />
+              <col style="width: 9%" />
+              <col style="width: 7%" />
+            </colgroup>
+            <thead>
+              <tr>
+                <th>Sent</th>
+                <th>Name</th>
+                <th>Title</th>
+                <th>Company</th>
+                <th>Location</th>
+                <th>Contact</th>
+                <th>Source</th>
+                <th class="text-end">Profile</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (person of results; track trackPerson($index, person)) {
+                <tr>
+                  <td>
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      [disabled]="!person.resultKey || markingResumeSent.has(person.resultKey)"
+                      [checked]="person.resumeSent"
+                      (change)="markResumeSent(person, 'people')"
+                      aria-label="Mark resume as sent"
+                    />
+                  </td>
+                  <td>
+                    <strong>{{ person.name }}</strong>
+                  </td>
+                  <td>{{ person.title }}</td>
+                  <td>{{ person.company }}</td>
+                  <td>{{ person.location }}</td>
+                  <td>
+                    @if (person.contactInfo) {
+                      {{ person.contactInfo }}
+                    } @else {
+                      <span class="text-muted">-</span>
+                    }
+                  </td>
+                  <td>
+                    <span class="source-chip source-chip-light">{{ person.source }}</span>
+                  </td>
+                  <td class="text-end">
+                    <a class="btn btn-outline-primary btn-sm px-2" [href]="person.profileUrl" target="_blank" rel="noreferrer">
+                      Open
+                    </a>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <div class="mobile-results">
+          @for (person of results; track trackPerson($index, person)) {
+            <article class="person-card">
+              <div class="d-flex justify-content-between align-items-start gap-2">
+                <div>
+                  <h5>{{ person.name }}</h5>
+                  <p>{{ person.title }}</p>
+                </div>
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  [disabled]="!person.resultKey || markingResumeSent.has(person.resultKey)"
+                  [checked]="person.resumeSent"
+                  (change)="markResumeSent(person, 'people')"
+                  aria-label="Mark resume as sent"
+                />
+              </div>
+              <dl>
+                <div>
+                  <dt>Company</dt>
+                  <dd>{{ person.company }}</dd>
+                </div>
+                <div>
+                  <dt>Location</dt>
+                  <dd>{{ person.location }}</dd>
+                </div>
+                <div>
+                  <dt>Contact</dt>
+                  <dd>{{ person.contactInfo || '-' }}</dd>
+                </div>
+                <div>
+                  <dt>Source</dt>
+                  <dd>{{ person.source }}</dd>
+                </div>
+              </dl>
+              <a class="btn btn-outline-primary btn-sm" [href]="person.profileUrl" target="_blank" rel="noreferrer">Open profile</a>
+            </article>
+          }
+        </div>
+      } @else {
+        <div class="state-message text-muted">Run a search to discover relevant professionals and contacts.</div>
+      }
+    </app-card>
+  </div>
+  }
+</div>

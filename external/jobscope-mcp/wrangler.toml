@@ -1,0 +1,45 @@
+name = "jobscope-mcp"
+main = "src/index.ts"
+compatibility_date = "2026-04-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Secrets required (set via `wrangler secret put`):
+#   USAJOBS_API_KEY     - free, register at https://developer.usajobs.gov/APIRequest/Index
+#   USAJOBS_USER_AGENT  - "jobscope-mcp/0.2.0 (+your-email)" (USAJobs requires a contact email)
+# The USAJobs adapter degrades gracefully (returns []) if these are absent.
+# For local development, set the same keys in `.dev.vars` (gitignored).
+
+# Keep the *.workers.dev URL live so early-share links stay alive while the
+# canonical URL (below) takes over.
+workers_dev = true
+
+# Canonical routes: this MCP lives at mcp.davidloor.com/jobscope-mcp as part
+# of an umbrella hosting multiple MCPs on one subdomain. Each MCP binds to
+# its package-name slug under mcp.davidloor.com.
+routes = [
+  { pattern = "mcp.davidloor.com/jobscope-mcp", zone_name = "davidloor.com" },
+  { pattern = "mcp.davidloor.com/jobscope-mcp/*", zone_name = "davidloor.com" },
+]
+
+# Durable Object binding required by the agents SDK's McpAgent.
+# Session state is held per-connection and is ephemeral; no persistent user data is stored.
+[[durable_objects.bindings]]
+name = "MCP_OBJECT"
+class_name = "JobscopeMcp"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["JobscopeMcp"]
+
+# Rate limit: 60 requests per minute per client IP.
+# Uses unsafe.bindings with type=ratelimit which is the current wrangler
+# syntax for the Workers Rate Limiting API (Open Beta). Namespace id must
+# be unique per account; clinical-trials-patient-mcp uses 1001.
+[[unsafe.bindings]]
+name = "RATE_LIMITER"
+type = "ratelimit"
+namespace_id = "1002"
+simple = { limit = 60, period = 60 }
+
+[observability]
+enabled = true

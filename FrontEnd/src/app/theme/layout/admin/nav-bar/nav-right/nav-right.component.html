@@ -1,0 +1,47 @@
+<ul class="navbar-nav">
+  <li>
+    <div class="dropdown drp-user" ngbDropdown placement="auto">
+      <a href="javascript:void(0)" class="user-toggle" ngbDropdownToggle data-toggle="dropdown">
+        @if (profilePhotoUrl) {
+          <img [src]="profilePhotoUrl" class="img-radius user-toggle-photo" alt="Foto do usuario" referrerpolicy="no-referrer" />
+        } @else {
+          <i class="icon feather icon-settings"></i>
+        }
+      </a>
+      <div class="dropdown-menu dropdown-menu-end profile-notification" ngbDropdownMenu>
+        <div class="pro-head">
+          @if (profilePhotoUrl) {
+            <img [src]="profilePhotoUrl" class="img-radius" alt="Foto do usuario" referrerpolicy="no-referrer" />
+          } @else {
+            <span class="profile-photo-placeholder">
+              <i class="feather icon-user"></i>
+            </span>
+          }
+          <span>
+            {{ displayName }}
+            @if (displayEmail) {
+              <small>{{ displayEmail }}</small>
+            }
+          </span>
+          <a href="javascript:void(0)" class="dud-logout" title="Sair" (click)="logout()">
+            <i class="feather icon-log-out"></i>
+          </a>
+        </div>
+        <ul class="pro-body">
+          <li>
+            <a routerLink="/credits" class="dropdown-item">
+              <i class="feather icon-credit-card"></i>
+              Comprar creditos
+            </a>
+          </li>
+          <li>
+            <a href="javascript:void(0)" class="dropdown-item" (click)="logout()">
+              <i class="feather icon-log-out"></i>
+              Sair
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </li>
+</ul>

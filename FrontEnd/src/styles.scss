@@ -1,0 +1,137 @@
+/* You can add global styles to this file, and also import other style files */
+
+@use './app/pages/landing/landing.component';
+
+@import 'scss/variables';
+
+/* fonts-icon */
+@import 'scss/fonts/fontawesome/scss/fontawesome';
+@import 'scss/fonts/feather/iconfont';
+
+@import 'scss/general';
+@import 'scss/generic';
+@import 'scss/mixins/function';
+
+/* important element */
+@import 'scss/menu/pc-footer.scss';
+@import 'scss/menu/menu-lite';
+
+/* basic elements */
+@import 'scss/theme-elements/theme-elements';
+
+/* third party modules style*/
+@import 'scss/plugins/plugins';
+
+@import 'scss/custom';
+
+.resume-editor-shell {
+  background: #eef2f6;
+  border: 1px solid #d8e0ea;
+  border-radius: 0 0 6px 6px;
+  max-height: 760px;
+  overflow: auto;
+  padding: 18px;
+}
+
+.resume-editor-shell .ql-toolbar.ql-snow {
+  background: #f8fafc;
+  border: 1px solid #d8e0ea;
+  border-radius: 6px 6px 0 0;
+  margin: 0 auto;
+  max-width: 820px;
+}
+
+.resume-editor-shell .ql-container.ql-snow {
+  background: #fff;
+  border: 1px solid #d8e0ea;
+  border-top: 0;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.14);
+  color: #1f2937;
+  font-family: Calibri, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.45;
+  margin: 0 auto;
+  max-width: 820px;
+  min-height: 940px;
+}
+
+.resume-editor-shell .ql-editor {
+  min-height: 940px;
+  padding: 64px 72px;
+}
+
+.resume-editor-shell .ql-editor h1,
+.resume-editor-shell .ql-editor h2,
+.resume-editor-shell .ql-editor h3 {
+  font-weight: 700;
+}
+
+.pcoded-main-container.navbar-collapsed {
+  margin-left: 80px;
+}
+
+app-nav-bar.pcoded-header.navbar-collapsed {
+  margin-left: 80px;
+  width: calc(100% - 80px);
+}
+
+.pcoded-navbar .header-logo .b-brand {
+  max-width: calc(100% - 42px);
+  overflow: hidden;
+}
+
+.pcoded-navbar .header-logo .b-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pcoded-navbar .header-logo .mobile-menu {
+  cursor: pointer;
+  z-index: 3;
+}
+
+.pcoded-navbar.navbar-collapsed:hover {
+  width: 80px !important;
+}
+
+.pcoded-navbar.navbar-collapsed .header-logo,
+.pcoded-navbar.navbar-collapsed:hover .header-logo {
+  width: 80px !important;
+}
+
+.pcoded-navbar.navbar-collapsed .header-logo .mobile-menu {
+  opacity: 1 !important;
+  right: 10px;
+  transform: none !important;
+}
+
+.pcoded-navbar.navbar-collapsed:hover .b-brand .b-title,
+.pcoded-navbar.navbar-collapsed:hover .pcoded-menu-caption > label,
+.pcoded-navbar.navbar-collapsed:hover .pcoded-inner-navbar app-nav-item > li > a > .pcoded-mtext,
+.pcoded-navbar.navbar-collapsed:hover .pcoded-inner-navbar > app-nav-group > app-nav-collapse > li > a > .pcoded-mtext {
+  opacity: 0 !important;
+  transform: rotateY(-90deg) !important;
+}
+
+.pcoded-navbar.navbar-collapsed:hover .pcoded-inner-navbar app-nav-item > li > a,
+.pcoded-navbar.navbar-collapsed:hover .pcoded-inner-navbar > app-nav-group > app-nav-collapse > li > a {
+  width: 80px;
+}
+
+.pcoded-navbar.navbar-collapsed:hover ~ app-nav-bar.pcoded-header,
+.pcoded-navbar.navbar-collapsed:hover ~ .pcoded-main-container {
+  margin-left: 80px;
+}
+
+.pcoded-navbar.navbar-collapsed:hover ~ app-nav-bar.pcoded-header {
+  width: calc(100% - 80px);
+}
+
+@media (max-width: 991px) {
+  .pcoded-main-container.navbar-collapsed,
+  app-nav-bar.pcoded-header.navbar-collapsed {
+    margin-left: 0;
+    width: 100%;
+  }
+}

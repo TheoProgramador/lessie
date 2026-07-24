@@ -1,0 +1,14 @@
+@Lessie.Api_HostAddress = http://localhost:5000
+
+GET {{Lessie.Api_HostAddress}}/health
+Accept: application/json
+
+###
+
+POST {{Lessie.Api_HostAddress}}/api/people-discovery/search
+Content-Type: application/json
+Accept: application/json
+
+{
+  "query": ".NET recruiters Brazil remote"
+}

@@ -1,0 +1,12 @@
+node_modules
+dist
+build
+coverage
+.env
+.DS_Store
+*.log
+.idea
+tmp
+captures
+/scripts
+jobspy.json
