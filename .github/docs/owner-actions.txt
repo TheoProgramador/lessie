@@ -1,0 +1,21 @@
+1. Open the repository settings in GitHub.
+2. Go to Branches -> Branch protection rules.
+3. Create a rule for main with:
+   - Require a pull request before merging
+   - Require approvals: 1
+   - Require conversation resolution
+   - Require status checks: Backend build, Frontend build
+   - Require linear history
+   - Allow force pushes: disabled
+   - Allow deletions: disabled
+   - Add bypass list for TheoProgramador and the current maintainer
+4. Create a rule for develop with:
+   - Require a pull request before merging
+   - Require approvals: 1
+   - Require status checks: Backend build, Frontend build
+   - Allow force pushes: disabled
+   - Allow deletions: disabled
+5. In repository settings, enable auto-delete head branches after merge.
+6. In repository settings, set squash merge as the default merge method.
+7. Confirm that GitHub Actions are enabled for the repository.
+8. Confirm that the workflows in .github/workflows are active.

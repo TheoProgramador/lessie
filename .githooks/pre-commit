@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Prevent commits to protected branches without explicit approval workflow.
+branch_name=$(git rev-parse --abbrev-ref HEAD)
+if [[ "$branch_name" == "main" || "$branch_name" == "develop" ]]; then
+  echo "Direct commits to protected branches are not allowed. Create a feature, bugfix, release, or hotfix branch first."
+  exit 1
+fi
+
+exit 0
