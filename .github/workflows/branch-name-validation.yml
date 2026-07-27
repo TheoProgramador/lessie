@@ -1,0 +1,42 @@
+name: Validate branch naming
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+  push:
+    branches:
+      - '**'
+
+jobs:
+  validate-branch-name:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate branch name
+        shell: bash
+        run: |
+          BRANCH_NAME="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
+          echo "Validating branch: $BRANCH_NAME"
+          if [[ "$BRANCH_NAME" =~ ^(main|develop)$ ]]; then
+            echo "Allowed branch: $BRANCH_NAME"
+            exit 0
+          fi
+          if [[ "$BRANCH_NAME" =~ ^feature/([a-zA-Z0-9._-]+)/([0-9]+)/([a-z0-9._-]+)$ ]]; then
+            echo "Valid feature branch"
+            exit 0
+          fi
+          if [[ "$BRANCH_NAME" =~ ^bugfix/([a-zA-Z0-9._-]+)/([0-9]+)/([a-z0-9._-]+)$ ]]; then
+            echo "Valid bugfix branch"
+            exit 0
+          fi
+          if [[ "$BRANCH_NAME" =~ ^release/([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+            echo "Valid release branch"
+            exit 0
+          fi
+          if [[ "$BRANCH_NAME" =~ ^hotfix/([a-zA-Z0-9._-]+)/([0-9]+)/([a-z0-9._-]+)$ ]]; then
+            echo "Valid hotfix branch"
+            exit 0
+          fi
+          echo "Branch name '$BRANCH_NAME' does not follow the required pattern."
+          exit 1

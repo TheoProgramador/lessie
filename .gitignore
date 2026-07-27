@@ -82,3 +82,18 @@ external/**/.pytest_cache/
 # Codex/local automation state
 .agents/
 .codex/
+.claude/
+.cursor/
+.taskmaster/
+.mcp.json
+
+# Local AI and automation caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.nx/
+.terraform/
+*.tsbuildinfo
