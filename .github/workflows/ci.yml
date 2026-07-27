@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  backend-build:
+    name: Backend build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Restore backend dependencies
+        run: dotnet restore Backend/src/Api/Lessie.Api.csproj
+      - name: Build backend
+        run: dotnet build Backend/src/Api/Lessie.Api.csproj --configuration Release --no-restore
+
+  frontend-build:
+    name: Frontend build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: FrontEnd/package-lock.json
+      - name: Install frontend dependencies
+        working-directory: FrontEnd
+        run: npm ci
+      - name: Build frontend
+        working-directory: FrontEnd
+        run: npm run build

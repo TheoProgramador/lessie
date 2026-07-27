@@ -1,11 +1,24 @@
 # Lessie
 
-Lessie e uma plataforma para apoiar busca de vagas, prospeccao profissional e evolucao de curriculo usando autenticacao Google, IA, integracoes externas, creditos pagos e painel web em Angular.
+Lessie é uma plataforma para apoiar busca de vagas, prospecção profissional e evolução de currículo usando autenticação Google, IA, integrações externas, créditos pagos e painel web em Angular.
 
-O repositorio esta dividido em dois projetos principais:
+O repositório está organizado para apoiar desenvolvimento moderno, colaboração humana e trabalho assistido por IA, mantendo a estrutura do produto e a integridade das regras de negócio.
 
-- `Backend`: API .NET com SQL Server, autenticacao, pagamentos, IA e persistencia.
-- `FrontEnd`: aplicacao Angular baseada no template Datta Able, servida em `0.0.0.0` para uso local e rede local.
+## Visão geral
+
+- `Backend`: API .NET com SQL Server, autenticação, pagamentos, IA e persistência.
+- `FrontEnd`: aplicação Angular com experiência web para usuários autenticados e administradores.
+- `Docs`: documentação de arquitetura, roadmap e épicos do produto.
+- `external`: integrações e projetos auxiliares, incluindo MCPs e componentes experimentais.
+
+## Desenvolvimento assistido por IA
+
+Este repositório foi preparado para facilitar o trabalho com ferramentas de IA, como GitHub Copilot e agentes de execução. As boas práticas recomendadas são:
+
+- ler a documentação e a estrutura existente antes de editar;
+- preservar contratos entre backend e frontend;
+- evitar incluir segredos, tokens ou credenciais em arquivos rastreados;
+- validar mudanças com os comandos de build e execução mais próximos do escopo da alteração.
 
 ## Funcionalidades
 
