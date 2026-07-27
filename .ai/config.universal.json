@@ -1,0 +1,114 @@
+﻿{
+    "version":  "1.0",
+    "portable":  true,
+    "conventions":  {
+                        "commits":  {
+                                        "style":  "Conventional Commits",
+                                        "emoji":  {
+                                                      "chore":  "🧹",
+                                                      "style":  "🎨",
+                                                      "perf":  "⚡",
+                                                      "build":  "🔧",
+                                                      "test":  "✅",
+                                                      "feat":  "✨",
+                                                      "refactor":  "♻️",
+                                                      "ci":  "👷",
+                                                      "fix":  "🐛",
+                                                      "revert":  "⏪",
+                                                      "docs":  "📝"
+                                                  },
+                                        "format":  "\u003ctype\u003e(\u003cscope\u003e): \u003cemoji\u003e \u003cdescription\u003e",
+                                        "types":  [
+                                                      "feat",
+                                                      "fix",
+                                                      "docs",
+                                                      "style",
+                                                      "refactor",
+                                                      "perf",
+                                                      "test",
+                                                      "build",
+                                                      "ci",
+                                                      "chore",
+                                                      "revert"
+                                                  ]
+                                    },
+                        "merging":  {
+                                        "noForcePush":  true,
+                                        "strategy":  "squash",
+                                        "requireApproval":  1,
+                                        "requirePR":  true,
+                                        "requireCIPassing":  true,
+                                        "linearHistory":  true
+                                    },
+                        "branches":  {
+                                         "bugfix":  "bugfix/\u003ccollaborator\u003e/\u003cissue-number\u003e/\u003cbug-name\u003e",
+                                         "hotfix":  "hotfix/\u003ccollaborator\u003e/\u003cissue-number\u003e/\u003chotfix-name\u003e",
+                                         "auto-delete":  true,
+                                         "release":  "release/\u003cversion\u003e",
+                                         "feature":  "feature/\u003ccollaborator\u003e/\u003cissue-number\u003e/\u003cfeature-name\u003e"
+                                     }
+                    },
+    "architecture":  {
+                         "external":  {
+                                          "type":  "MCPs and integrations",
+                                          "location":  "external/"
+                                      },
+                         "backend":  {
+                                         "orm":  "Entity Framework Core",
+                                         "database":  "SQL Server",
+                                         "structure":  [
+                                                           "Backend/src/Api",
+                                                           "Backend/src/Application",
+                                                           "Backend/src/Domain",
+                                                           "Backend/src/Infrastructure"
+                                                       ],
+                                         "framework":  ".NET 10"
+                                     },
+                         "frontend":  {
+                                          "ui":  "Bootstrap 5",
+                                          "location":  "FrontEnd/src/app",
+                                          "framework":  "Angular 21"
+                                      },
+                         "type":  "monorepo"
+                     },
+    "tools":  {
+                  "cline":  {
+                                "priority":  "high",
+                                "configFile":  ".cline/config.json",
+                                "contextFile":  ".cline/context.md"
+                            },
+                  "generic":  {
+                                  "priority":  "high",
+                                  "contextFile":  ".instructions.md"
+                              },
+                  "cursor":  {
+                                 "configFile":  ".cursor/instructions.md",
+                                 "priority":  "medium"
+                             },
+                  "copilot":  {
+                                  "configFile":  ".github/copilot-instructions.md",
+                                  "priority":  "high"
+                              },
+                  "claude":  {
+                                 "priority":  "high",
+                                 "contextFile":  ".ai/universal-context.md"
+                             }
+              },
+    "compatibleTools":  [
+                            "copilot",
+                            "cline",
+                            "claude",
+                            "codex",
+                            "cursor",
+                            "perplexity"
+                        ],
+    "project":  {
+                    "developmentBranch":  "develop",
+                    "name":  "Lessie",
+                    "mainBranch":  "main",
+                    "gitFlowSetup":  "2026-07-27",
+                    "description":  "AI-assisted platform for professional prospecting, resume improvement, and interview analysis",
+                    "repository":  "https://github.com/TheoProgramador/lessie",
+                    "created":  "2026-07-24"
+                }
+}

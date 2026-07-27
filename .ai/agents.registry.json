@@ -1,0 +1,92 @@
+﻿{
+    "tools":  {
+                  "generic":  {
+                                  "configFile":  ".instructions.md",
+                                  "capability":  "development-assistance",
+                                  "name":  "Any Other AI Tool",
+                                  "priority":  "high",
+                                  "version":  "any",
+                                  "notes":  "Universal files work with any LLM-powered tool",
+                                  "contextFile":  ".ai/universal-context.md",
+                                  "guidelinesFile":  ".ai/guidelines.md"
+                              },
+                  "claude":  {
+                                 "version":  "any",
+                                 "name":  "Claude (Direct / Web Interface)",
+                                 "contextFile":  ".ai/universal-context.md",
+                                 "guidelinesFile":  ".ai/guidelines.md",
+                                 "priority":  "high",
+                                 "instructionsFile":  ".instructions.md",
+                                 "capability":  "planning, analysis, code-generation"
+                             },
+                  "perplexity":  {
+                                     "version":  "any",
+                                     "name":  "Perplexity AI",
+                                     "contextFile":  ".ai/universal-context.md",
+                                     "guidelinesFile":  ".ai/guidelines.md",
+                                     "notes":  "Good for understanding architecture and roadmap",
+                                     "priority":  "medium",
+                                     "capability":  "research, analysis, documentation"
+                                 },
+                  "copilot":  {
+                                  "version":  "latest",
+                                  "name":  "GitHub Copilot",
+                                  "configFile":  ".github/copilot-instructions.md",
+                                  "contextFile":  ".ai/universal-context.md",
+                                  "priority":  "high",
+                                  "capability":  "code-completion, inline-suggestions, chat"
+                              },
+                  "codex":  {
+                                "version":  "latest",
+                                "name":  "GitHub Copilot X (Codex)",
+                                "configFile":  ".github/copilot-instructions.md",
+                                "contextFile":  ".ai/universal-context.md",
+                                "priority":  "high",
+                                "capability":  "code-generation, documentation"
+                            },
+                  "cline":  {
+                                "configFile":  ".cline/config.json",
+                                "version":  "latest",
+                                "contextFile":  ".cline/context.md",
+                                "llmProvider":  "polinations.ai",
+                                "name":  "Cline",
+                                "capability":  "autonomous-coding, full-stack-development",
+                                "model":  "claude-3.5-sonnet",
+                                "fallbackContext":  ".ai/universal-context.md",
+                                "priority":  "high"
+                            },
+                  "cursor":  {
+                                 "configFile":  ".cursor/instructions.md",
+                                 "capability":  "inline-editing, ai-powered-autocomplete",
+                                 "name":  "Cursor IDE",
+                                 "priority":  "medium",
+                                 "version":  "latest",
+                                 "notes":  "Config file not yet created - use .ai/ as fallback",
+                                 "fallbackContext":  ".instructions.md",
+                                 "contextFile":  ".ai/universal-context.md"
+                             }
+              },
+    "universalBase":  {
+                          "description":  "Common foundation for all AI tools",
+                          "configFile":  ".ai/config.universal.json",
+                          "guidelinesFile":  ".ai/guidelines.md",
+                          "contextFile":  ".ai/universal-context.md"
+                      },
+    "updatePolicy":  {
+                         "frequency":  "after-major-implementation",
+                         "responsible":  "AI developer completing task",
+                         "files":  [
+                                       ".ai/universal-context.md",
+                                       ".ai/config.universal.json",
+                                       ".cline/context.md"
+                                   ]
+                     },
+    "loadOrder":  [
+                      "config.universal.json",
+                      "universal-context.md",
+                      "guidelines.md",
+                      "AGENTS.md",
+                      "Instructions from .github or .cline or .instructions.md",
+                      "Start development"
+                  ]
+}
