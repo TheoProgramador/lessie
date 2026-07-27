@@ -1,0 +1,24 @@
+﻿{
+    "systemPrompt":  "AI specialist for Lessie platform development",
+    "capabilities":  {
+                         "fileModification":  true,
+                         "fileCreation":  true,
+                         "codeEditing":  true,
+                         "webSearch":  false,
+                         "terminalExecution":  false
+                     },
+    "contextWindow":  200000,
+    "baseUrl":  "https://api.polinations.ai/openai/v1",
+    "apiKey":  "${POLINATIONS_API_KEY}",
+    "maxTokens":  8000,
+    "model":  "claude-3.5-sonnet",
+    "modelProvider":  "polinations",
+    "projectContext":  {
+                           "mainBranch":  "main",
+                           "developmentBranch":  "develop",
+                           "description":  "AI-assisted platform for professional prospecting",
+                           "name":  "Lessie",
+                           "gitFlow":  "enabled"
+                       },
+    "temperature":  0.7
+}
