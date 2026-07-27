@@ -1,0 +1,35 @@
+name: Auto backmerge main to develop
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  create-backmerge-pr:
+    if: github.event.head_commit.message != 'chore: sync main to develop'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Create or update backmerge PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git fetch origin develop
+          git checkout -B temp-backmerge origin/main
+          git checkout -B develop origin/develop
+          git merge --no-edit origin/main || true
+          if git diff --quiet --exit-code origin/develop..HEAD; then
+            echo "No changes to backmerge."
+            exit 0
+          fi
+          gh pr create \
+            --base develop \
+            --head main \
+            --title "chore: sync main to develop" \
+            --body "Automated backmerge from main to develop after release or hotfix." || true
