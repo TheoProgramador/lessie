@@ -6,15 +6,14 @@ on:
       - main
 
 jobs:
-  create-backmerge-pr:
+  backmerge:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Backmerge
-        shell: bash
+      - name: Run backmerge
         run: |
           set -e
           git fetch origin main develop
