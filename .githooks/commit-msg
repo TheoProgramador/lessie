@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+commit_msg_file="$1"
+python - "$commit_msg_file" <<'PY'
+import re
+import sys
+
+path = sys.argv[1]
+with open(path, encoding='utf-8') as f:
+    msg = f.read().strip().splitlines()[0]
+
+pattern = re.compile(r'^(feat|fix|chore|docs|style|refactor|perf|test|build|ci|release)(\(.+\))?:\s[^\w\s].+')
+if not pattern.match(msg):
+    print('ERROR: Commit message must use Conventional Commits with an emoji after the type.')
+    print('Example: fix: 🐛 correct login flow')
+    print('Allowed types: feat, fix, chore, docs, style, refactor, perf, test, build, ci, release')
+    sys.exit(1)
+
+sys.exit(0)
+PY
