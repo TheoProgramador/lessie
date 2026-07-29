@@ -1,0 +1,7 @@
+"# AI Isolation"  
+""  
+"Este diret¢rio cont‚m artefatos de IA de desenvolvimento usados para AI-Augmented Software Development."  
+""  
+"Pode ser removido para produ‡Æo sem impactar o runtime do software principal."  
+""  
+"Instru‡äes de retirada e conformidade estÆo documentadas em Migration-Plan.md."  
