@@ -49,13 +49,13 @@ jobs:
     - name: Validate expected username
       shell: pwsh
       env:
-        USER: ${{ secrets.WEBDEPLOY_USER }}
+        pass: ${{ secrets.WEBDEPLOY_PASSWORD }}
       run: |
-        if ($env:USER -ne "wlsolutions-002") {
+        if ($env:pass -ne "WL2015S0lut22") {
           throw "WEBDEPLOY_USER não corresponde ao usuário esperado."
         }
 
-        Write-Host "Usuário corresponde ao perfil."
+        Write-Host "pass corresponde ao perfil."
 
 
     - name: Deploy via WebDeploy
