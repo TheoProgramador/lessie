@@ -37,6 +37,17 @@ jobs:
             --output ./publish `
             --no-build
 
+    - name: Validate secrets
+      shell: pwsh
+      env:
+        USER: ${{ secrets.WEBDEPLOY_USER }}
+        PASS: ${{ secrets.WEBDEPLOY_PASSWORD }}
+      run: |
+        Write-Host "USER length: $($env:USER.Length)"
+        Write-Host "PASS length: $($env:PASS.Length)"
+
+
+
     - name: Deploy via WebDeploy
       run: dotnet publish Backend/src/Api/Lessie.Api.csproj `
             --configuration Release `
