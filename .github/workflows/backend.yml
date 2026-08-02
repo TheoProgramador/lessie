@@ -59,8 +59,15 @@ jobs:
 
 
     - name: Deploy via WebDeploy
-      run: dotnet publish Backend/src/Api/Lessie.Api.csproj `
-            --configuration Release `
-            --no-build `
-            -p:PublishProfile=IISProfile `
-            -p:Password="${{ secrets.WEBDEPLOY_PASSWORD }}"
+      shell: pwsh
+      run: |
+        dotnet publish Backend/src/Api/Lessie.Api.csproj `
+          --configuration Release `
+          --no-build `
+          -p:WebPublishMethod=MSDeploy `
+          -p:MSDeployServiceURL="https://win8133.site4now.net:8172/msdeploy.axd?site=wlsolutions-002-site10" `
+          -p:DeployIisAppPath="wlsolutions-002-site10" `
+          -p:MSDeployPublishMethod=WMSVC `
+          -p:UserName="${{ secrets.WEBDEPLOY_USER }}" `
+          -p:Password="${{ secrets.WEBDEPLOY_PASSWORD }}" `
+          -p:AllowUntrustedCertificate=True
