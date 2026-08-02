@@ -63,5 +63,4 @@ jobs:
             --configuration Release `
             --no-build `
             -p:PublishProfile=IISProfile `
-            -p:UserName="${{ secrets.WEBDEPLOY_USER }}" `
             -p:Password="${{ secrets.WEBDEPLOY_PASSWORD }}"
