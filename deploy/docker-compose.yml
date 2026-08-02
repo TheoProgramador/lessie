@@ -1,0 +1,12 @@
+services:
+  lessie-front:
+    container_name: lessie-front
+
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.Front
+
+    restart: unless-stopped
+
+    ports:
+      - "81:80"

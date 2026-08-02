@@ -6,6 +6,7 @@ using Lessie.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Scalar.AspNetCore;
 
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
@@ -86,10 +87,11 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+app.MapOpenApi();
+app.MapScalarApiReference();
+
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
-
     using var scope = app.Services.CreateScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<LessieDbContext>();
     await DatabaseInitializer.EnsureDevelopmentSchemaAsync(dbContext);

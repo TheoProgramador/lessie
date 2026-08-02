@@ -7,7 +7,7 @@ namespace Lessie.Api.Controllers;
 
 [ApiController]
 [Route("api/auth")]
-public sealed class AuthController(IAuthService authService, IWebHostEnvironment environment) : ControllerBase
+public sealed class AuthController(IAuthService authService, IWebHostEnvironment environment, IConfiguration configuration) : ControllerBase
 {
     [HttpPost("google")]
     public async Task<IActionResult> SignInWithGoogleAsync(GoogleAuthRequest request, CancellationToken cancellationToken)
@@ -35,7 +35,7 @@ public sealed class AuthController(IAuthService authService, IWebHostEnvironment
     [HttpPost("dev-admin")]
     public async Task<IActionResult> SignInDevelopmentAdminAsync(CancellationToken cancellationToken)
     {
-        if (!environment.IsDevelopment() || HttpContext.Connection.RemoteIpAddress?.IsLoopback() != true)
+        if (!IsDevelopmentAdminLoginAllowed())
         {
             return NotFound();
         }
@@ -45,6 +45,23 @@ public sealed class AuthController(IAuthService authService, IWebHostEnvironment
             cancellationToken);
 
         return Ok(new AuthResponse(tokens.AccessToken, tokens.RefreshToken, tokens.ExpiresIn));
+    }
+
+    private bool IsDevelopmentAdminLoginAllowed()
+    {
+        if (environment.IsDevelopment() && HttpContext.Connection.RemoteIpAddress?.IsLoopback() == true)
+        {
+            return true;
+        }
+
+        var configuredAccessKey = configuration["DEV_ADMIN_ACCESS_KEY"] ?? configuration["Auth:DevelopmentAdminAccessKey"];
+        if (string.IsNullOrWhiteSpace(configuredAccessKey))
+        {
+            return false;
+        }
+
+        return Request.Headers.TryGetValue("X-Dev-Admin-Key", out var accessKey)
+            && string.Equals(accessKey.ToString(), configuredAccessKey, StringComparison.Ordinal);
     }
 
     [HttpPost("refresh")]

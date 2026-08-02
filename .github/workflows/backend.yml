@@ -1,0 +1,46 @@
+name: Deploy Lessie Backend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'Backend/**'
+
+  workflow_dispatch:
+
+jobs:
+
+  build-and-deploy:
+
+    runs-on: windows-latest
+
+    steps:
+
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET 10
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+
+    - name: Restore
+      run: dotnet restore Backend/src/Api/Lessie.Api.csproj
+
+    - name: Build
+      run: dotnet build Backend/src/Api/Lessie.Api.csproj --configuration Release --no-restore
+
+    - name: Publish
+      run: dotnet publish Backend/src/Api/Lessie.Api.csproj `
+            --configuration Release `
+            --output ./publish `
+            --no-build
+
+    - name: Deploy via WebDeploy
+      run: dotnet publish Backend/src/Api/Lessie.Api.csproj `
+            --configuration Release `
+            --no-build `
+            -p:PublishProfile=IISProfile `
+            -p:UserName="${{ secrets.WEBDEPLOY_USER }}" `
+            -p:Password="${{ secrets.WEBDEPLOY_PASSWORD }}"

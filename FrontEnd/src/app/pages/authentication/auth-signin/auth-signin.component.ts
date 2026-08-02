@@ -29,7 +29,7 @@ export class AuthSigninComponent implements AfterViewInit {
 
   error = signal('');
   loading = signal(false);
-  readonly showDevelopmentLogin = !environment.production && this.isLocalhost() && this.isLocalApi();
+  readonly showDevelopmentLogin = true;
 
   ngAfterViewInit(): void {
     this.initializeGoogleSignIn();
@@ -120,16 +120,4 @@ export class AuthSigninComponent implements AfterViewInit {
     });
   }
 
-  private isLocalhost(): boolean {
-    return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-  }
-
-  private isLocalApi(): boolean {
-    try {
-      const apiUrl = new URL(environment.apiBaseUrl);
-      return apiUrl.hostname === 'localhost' || apiUrl.hostname === '127.0.0.1';
-    } catch {
-      return false;
-    }
-  }
 }

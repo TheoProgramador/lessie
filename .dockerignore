@@ -1,0 +1,21 @@
+cd ~/Projetos/projetosJS/Lessie
+
+cat > .dockerignore <<'EOF'
+.git
+.gitignore
+
+FrontEnd/node_modules
+FrontEnd/dist
+FrontEnd/.angular
+FrontEnd/.cache
+
+Backend/**/bin
+Backend/**/obj
+Backend/artifacts
+
+external
+Docs
+tools
+
+deploy/*.log
+EOF

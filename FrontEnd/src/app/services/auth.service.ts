@@ -90,7 +90,11 @@ export class AuthService {
   }
 
   loginAsDevelopmentAdmin(): Observable<AuthResponse> {
-    return this.http.post<AuthApiResponse>(`${this.apiBaseUrl}/api/auth/dev-admin`, {}).pipe(
+    const options = environment.devAdminAccessKey
+      ? { headers: { 'X-Dev-Admin-Key': environment.devAdminAccessKey } }
+      : undefined;
+
+    return this.http.post<AuthApiResponse>(`${this.apiBaseUrl}/api/auth/dev-admin`, {}, options).pipe(
       map((response) => this.normalizeAuthResponse(response)),
       tap((response) => this.tokenService.setTokens(response.accessToken, response.refreshToken))
     );
