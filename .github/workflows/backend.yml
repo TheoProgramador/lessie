@@ -1,16 +1,12 @@
-name: Deploy Lessie Backend
+name: Deploy ASP.NET via WebDeploy
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'Backend/**'
+  schedule:
+    - cron: "0 1 * * *"   # 22:00 Brasil
 
   workflow_dispatch:
 
 jobs:
-
   build-and-deploy:
 
     runs-on: windows-latest
@@ -20,36 +16,42 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Setup .NET 10
+    # Verifica se houve commit nas últimas 24h
+    - name: Check if there were changes
+      id: check_changes
+      shell: pwsh
+      run: |
+        $changes = git log --since="24 hours ago" --oneline
+        if ($changes) {
+          echo "changed=true" >> $env:GITHUB_OUTPUT
+        }
+        else {
+          echo "changed=false" >> $env:GITHUB_OUTPUT
+        }
+
+    # Só builda se houve mudança
+    - name: Setup .NET
+      if: steps.check_changes.outputs.changed == 'true'
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '10.0.x'
+        dotnet-version: '8.0.x'
 
-    - name: Restore
-      run: dotnet restore Backend/src/Api/Lessie.Api.csproj
+    - name: Restore dependencies
+      if: steps.check_changes.outputs.changed == 'true'
+      run: dotnet restore
 
-    - name: Build
-      run: dotnet build Backend/src/Api/Lessie.Api.csproj --configuration Release --no-restore
+    - name: Build project
+      if: steps.check_changes.outputs.changed == 'true'
+      run: dotnet build --configuration Release --no-restore
 
-    - name: Publish
-      run: dotnet publish Backend/src/Api/Lessie.Api.csproj `
-            --configuration Release `
-            --output ./publish `
-            --no-build
-
-    - name: Validate secrets
-      shell: pwsh
-      env:
-        USER: ${{ secrets.WEBDEPLOY_USER }}
-        PASS: ${{ secrets.WEBDEPLOY_PASSWORD }}
-      run: |
-        Write-Host "USER length: $($env:USER.Length)"
-        Write-Host "PASS length: $($env:PASS.Length)"
+    - name: Publish project
+      if: steps.check_changes.outputs.changed == 'true'
+      run: dotnet publish --configuration Release --output ./publish --no-build
 
     - name: Deploy via WebDeploy
-      run: dotnet publish Backend/src/Api/Lessie.Api.csproj `
-            --configuration Release `
-            --no-build `
+      if: steps.check_changes.outputs.changed == 'true'
+      run: dotnet publish `
+            -c Release `
             -p:PublishProfile=IISProfile `
             -p:UserName="${{ secrets.WEBDEPLOY_USER }}" `
-            -p:Password="${{ secrets.WEBDEPLOY_PASSWORD }}"
+            -p:Password="${{ secrets.WEBDEPLOY_PASSWORD }}"            
