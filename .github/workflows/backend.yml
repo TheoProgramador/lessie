@@ -31,43 +31,37 @@ jobs:
     - name: Build
       run: dotnet build Backend/src/Api/Lessie.Api.csproj --configuration Release --no-restore
 
-
-    - name: Validate WebDeploy secrets
-      shell: pwsh
-      env:
-        WEBDEPLOY_USER: ${{ secrets.WEBDEPLOY_USER }}
-        WEBDEPLOY_PASSWORD: ${{ secrets.WEBDEPLOY_PASSWORD }}
-      run: |
-        if ([string]::IsNullOrWhiteSpace($env:WEBDEPLOY_USER)) {
-          throw "WEBDEPLOY_USER está vazio ou não existe neste repositório."
-        }
-    
-        if ([string]::IsNullOrWhiteSpace($env:WEBDEPLOY_PASSWORD)) {
-          throw "WEBDEPLOY_PASSWORD está vazio ou não existe neste repositório."
-        }
-    
-        Write-Host "Secrets encontrados."
-        Write-Host "Tamanho do usuário: $($env:WEBDEPLOY_USER.Length)"
-        Write-Host "Tamanho da senha: $($env:WEBDEPLOY_PASSWORD.Length)"
-
-
-
     - name: Publish
       run: dotnet publish Backend/src/Api/Lessie.Api.csproj `
             --configuration Release `
             --output ./publish `
             --no-build
 
+    - name: Validate secrets
+      shell: pwsh
+      env:
+        USER: ${{ secrets.WEBDEPLOY_USER }}
+        PASS: ${{ secrets.WEBDEPLOY_PASSWORD }}
+      run: |
+        Write-Host "USER length: $($env:USER.Length)"
+        Write-Host "PASS length: $($env:PASS.Length)"
 
+    - name: Validate expected username
+      shell: pwsh
+      env:
+        USER: ${{ secrets.WEBDEPLOY_USER }}
+      run: |
+        if ($env:USER -ne "wlsolutions-002") {
+          throw "WEBDEPLOY_USER não corresponde ao usuário esperado."
+        }
+
+        Write-Host "Usuário corresponde ao perfil."
 
 
     - name: Deploy via WebDeploy
-      shell: pwsh
-      run: |
-        dotnet publish Backend/src/Api/Lessie.Api.csproj `
-          --configuration Release `
-          --no-build `
-          -p:PublishProfile=IISProfile `
-          -p:UserName="wlsolutions-002" `
-          -p:Password="${{ secrets.WEBDEPLOY_PASSWORD }}" `
-          -p:AllowUntrustedCertificate=True
+      run: dotnet publish Backend/src/Api/Lessie.Api.csproj `
+            --configuration Release `
+            --no-build `
+            -p:PublishProfile=IISProfile `
+            -p:UserName="${{ secrets.WEBDEPLOY_USER }}" `
+            -p:Password="${{ secrets.WEBDEPLOY_PASSWORD }}"
