@@ -3,6 +3,6 @@ import packageInfo from '../../package.json';
 export const environment = {
   appVersion: packageInfo.version,
   production: true,
-  apiBaseUrl: 'https://api.leads.grandessites.com.br',
+  apiBaseUrl: 'http://wlsolutions-002-site10.gtempurl.com',
   googleClientId: ''
 };

@@ -4,12 +4,10 @@
 
 import packageInfo from '../../package.json';
 
-const apiHost = globalThis.location?.hostname || 'localhost';
-
 export const environment = {
   appVersion: packageInfo.version,
   production: false,
-  apiBaseUrl: `http://${apiHost}:5000`,
+  apiBaseUrl: 'http://wlsolutions-002-site10.gtempurl.com',
   googleClientId: '465394213386-0kqcqu1ialvno3st14ifd8h82fc4ga23.apps.googleusercontent.com'
 };
 /*
