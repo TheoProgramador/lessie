@@ -57,6 +57,17 @@ jobs:
 
         Write-Host "pass corresponde ao perfil."
 
+    - name: Test WebDeploy credentials
+      shell: pwsh
+      run: |
+        $sec = ConvertTo-SecureString "${{ secrets.WEBDEPLOY_PASSWORD }}" -AsPlainText -Force
+        $cred = New-Object System.Management.Automation.PSCredential("${{ secrets.WEBDEPLOY_USER }}", $sec)
+    
+        Invoke-WebRequest `
+          -Uri "https://win8133.site4now.net:8172/msdeploy.axd?site=wlsolutions-002-site10" `
+          -Credential $cred `
+          -UseBasicParsing `
+          -SkipCertificateCheck
 
     - name: Deploy via WebDeploy
       run: |
